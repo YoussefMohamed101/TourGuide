@@ -34,7 +34,7 @@ class _AiCameraState extends State<AiCamera> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        systemOverlayStyle: SystemUiOverlayStyle(
+        systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.dark,
         ),
@@ -51,7 +51,7 @@ class _AiCameraState extends State<AiCamera> {
                 height: 250.0,
                 child: Center(
                   child: _image == null
-                      ? Icon(
+                      ? const Icon(
                     Icons.add_a_photo,
                     color: Colors.grey,
                     size: 50,
@@ -87,43 +87,45 @@ class _AiCameraState extends State<AiCamera> {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300),
               ),
             ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height*0.25,
+            const Expanded(
+              child: SizedBox.expand(),
             ),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    // <-- ElevatedButton
-                    onPressed: () {
-                      getImagefromcamera();
-                    },
-                    child: Text('Take a picture'),
-                    style: ElevatedButton.styleFrom(
-                      primary: Color.fromRGBO(249, 168, 38, 1),
-                      onPrimary: Colors.white,
-                      //shadowColor: Color.fromRGBO(249, 0, 38, 1),
-                      elevation: 10,
+            Expanded(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      // <-- ElevatedButton
+                      onPressed: () {
+                        getImagefromcamera();
+                      },
+                      child: const Text('Take a picture'),
+                      style: ElevatedButton.styleFrom(
+                        primary: const Color.fromRGBO(249, 168, 38, 1),
+                        onPrimary: Colors.white,
+                        //shadowColor: Color.fromRGBO(249, 0, 38, 1),
+                        elevation: 10,
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  width: 20,
-                ),
-                Expanded(
-                  child: ElevatedButton(
-                    // <-- ElevatedButton
-                    onPressed: () {getImagefromGallery();},
-                    child: Text('Pick a picture'),
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.white,
-                      onPrimary: Color.fromRGBO(249, 168, 38, 1),
-                      //shadowColor: Color.fromRGBO(249, 0, 38, 1),
-                      elevation: 10,
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Expanded(
+                    child: ElevatedButton(
+                      // <-- ElevatedButton
+                      onPressed: () {getImagefromGallery();},
+                      child: const Text('Pick a picture'),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.white,
+                        onPrimary: const Color.fromRGBO(249, 168, 38, 1),
+                        //shadowColor: Color.fromRGBO(249, 0, 38, 1),
+                        elevation: 10,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
 
 

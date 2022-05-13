@@ -6,26 +6,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:untitled2/screens/discovery_screens/discovery_screen.dart';
+import 'package:untitled2/screens/discovery_screens/searchScreen.dart';
+import 'package:untitled2/services/GetData.dart';
 import 'package:untitled2/services/authentication.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class home_screen extends StatefulWidget {
   @override
   State<home_screen> createState() => _home_screenState();
-}
-
-class User {
-  final id;
-  final Name;
-  final imgURl;
-  final CurrentLocation;
-
-  User({
-    required this.id,
-    required this.Name,
-    required this.imgURl,
-    required this.CurrentLocation,
-  });
 }
 
 class imgModel {
@@ -66,30 +54,8 @@ List<imgModel> ProgDetails = [
       goverName: 'Giza'),
 ];
 
-class _home_screenState extends State<home_screen> {
-  var Username;
-  var UserPhoto;
-  var userlocalpic;
-  getUser() async {
-    Auth auth = new Auth();
-    var user = await auth.getCurrentUser();
-    userlocalpic = user?.photoURL;
-    var userstore = FirebaseFirestore.instance.collection("users").doc(user?.uid);
-    await userstore.get().then((value) {
-      // Username = value
-        Username = value.data()?['username'];
-        UserPhoto = value.data()?['photourl'];
-    });
-  }
 
-  @override
-  void initState() {
-    // imageCache!.clear();
-    // imageCache!.clearLiveImages();
-    startTimer();
-    getUser();
-    super.initState();
-  }
+class _home_screenState extends State<home_screen> {
 
   // List<User> user = [
   //   User(
@@ -109,26 +75,27 @@ class _home_screenState extends State<home_screen> {
       t.cancel(); //stops the timer
     });
   }
-
+  late final Future AuthUser = getUser();
   @override
   Widget build(BuildContext context) {
+    //print(userdata);
     return Scaffold(
         extendBodyBehindAppBar: true,
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          systemOverlayStyle: isLoading? SystemUiOverlayStyle(
-            statusBarIconBrightness: Brightness.dark,
-            statusBarColor: Colors.transparent,
-          ):SystemUiOverlayStyle(
-            statusBarIconBrightness: Brightness.light,
-            statusBarColor: Colors.transparent,
-          ),
+          // systemOverlayStyle: isLoading? SystemUiOverlayStyle(
+          //   statusBarIconBrightness: Brightness.dark,
+          //   statusBarColor: Colors.transparent,
+          // ):SystemUiOverlayStyle(
+          //   statusBarIconBrightness: Brightness.light,
+          //   statusBarColor: Colors.transparent,
+          // ),
         ),
-        body: isLoading ?
-        Center(
-            child: CircularProgressIndicator(
-              color: Color.fromRGBO(249, 168, 38, 1),
-            )):Column(
+        body: FutureBuilder(
+          future: AuthUser,
+          builder: (BuildContext context, AsyncSnapshot snapshot){
+            if(snapshot.hasData){
+              return Column(
                 children: [
                   Stack(
                     alignment: AlignmentDirectional.topStart,
@@ -138,7 +105,7 @@ class _home_screenState extends State<home_screen> {
                         height: MediaQuery.of(context).size.height * 0.35,
                         decoration: BoxDecoration(
                           image: DecorationImage(
-                            image: AssetImage(
+                            image: const AssetImage(
                                 'lib/img/home/homepage background.png'),
                             fit: BoxFit.fill,
                             colorFilter: ColorFilter.mode(
@@ -159,7 +126,7 @@ class _home_screenState extends State<home_screen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Hi, ${Username}',
+                                    'Hi, ${snapshot.data[0]}',
                                     style: TextStyle(
                                       fontSize: 30,
                                       fontWeight: FontWeight.bold,
@@ -212,89 +179,59 @@ class _home_screenState extends State<home_screen> {
                                 ],
                               ),
                             ),
-                            UserPhoto== null?
                             ClipOval(
-                              child: Image.asset("$userlocalpic",fit: BoxFit.fill,height: 60,width: 60,),
-                            ):
-                            ClipOval(
-                              child: CachedNetworkImage(imageUrl:UserPhoto,fit: BoxFit.fill,height: 60,width: 60,),
+                              child: CachedNetworkImage(imageUrl:snapshot.data[1],fit: BoxFit.fill,height: 60,width: 60,),
                             ),
                           ],
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                          left: 30.0,
-                          right: 30.0,
-                          top: MediaQuery.of(context).size.height * 0.24,
-                        ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(
-                              20.0,
-                            ),
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.2),
-                                spreadRadius: 5,
-                                blurRadius: 7,
-                                offset:
-                                Offset(1, 3), // changes position of shadow
-                              ),
-                            ],
+                      GestureDetector(
+                        onTap: (){
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => searchScreen(),
+                              ));
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            left: 30.0,
+                            right: 30.0,
+                            top: MediaQuery.of(context).size.height * 0.24,
                           ),
-                          child: TextFormField(
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
+                          child: Container(
+                            height: 55,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(
+                                20.0,
+                              ),
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.2),
+                                  spreadRadius: 5,
+                                  blurRadius: 7,
+                                  offset:
+                                  Offset(1, 3), // changes position of shadow
+                                ),
+                              ],
                             ),
-                            onFieldSubmitted: (String value) {
-                              print(value);
-                            },
-                            onChanged: (String value) {
-                              print(value);
-                            },
-                            decoration: InputDecoration(
-                              hintText: 'Where do you want to go?',
-                              prefixIcon: Icon(
-                                Icons.search,
-                                color: Color.fromRGBO(249, 168, 38, 1),
-                              ),
-                              hintStyle: TextStyle(
-                                color: Color.fromRGBO(249, 168, 38, 1),
-                                fontWeight: FontWeight.bold,
-                              ),
-                              errorStyle: TextStyle(
-                                color: Colors.red,
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Colors.transparent,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 15.0),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.search,color: Color.fromRGBO(249, 168, 38, 1)),
+                                    SizedBox(
+                                      width: MediaQuery.of(context).size.width*0.02,
+                                    ),
+                                    Text('Where do you want to go?',style: TextStyle(
+                                      color: Color.fromRGBO(249, 168, 38, 1),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),)
+                                  ],
                                 ),
                               ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Color.fromRGBO(249, 168, 38, 1),
-                                  width: 2,
-                                ),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Colors.red,
-                                  width: 2,
-                                ),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              focusedErrorBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Colors.red,
-                                  width: 2,
-                                ),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                            ),
                           ),
                         ),
                       ),
@@ -425,7 +362,7 @@ class _home_screenState extends State<home_screen> {
                                     left: 2,
                                   ),
                                   child: Row(
-                                    children: [
+                                    children: const [
                                       Text(
                                         'Popular Places',
                                         style: TextStyle(
@@ -466,7 +403,11 @@ class _home_screenState extends State<home_screen> {
                     ),
                   ),
                 ],
-              ),
+              );
+            }
+            return Center(child: CircularProgressIndicator());
+          },
+        ),
       );
   }
 

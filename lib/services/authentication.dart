@@ -50,56 +50,28 @@ class Auth implements BaseAuth {
       String email, String password, String Name, var filename , var imageTemporary) async {
     var imageurl;
     var id;
-    if(filename == null){
       try {
         final authResult = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: email, password: password)
             .then((result) {
           result.user!.updateDisplayName(Name);
-          result.user!.updatePhotoURL('lib/img/istockphoto-1008665336-612x612.jpg');
           id = result.user?.uid;
         });
-        
-        await FirebaseFirestore.instance.collection("users").doc(id).set(
-            {
-              "username": Name,
-              "Email": email,
-              "photourl": imageurl,
-            });
-
-      } on FirebaseAuthException catch (e) {
-        print('=====================================');
-        print (e.code);
-        err = e.toString();
-        if (e.code == 'network-request-failed') {
-          err = "Check your internet connection and try again";
-          return false;
-        }
-        if (e.code == 'weak-password') {
-          err = "weak password";
-          return false;
-        } else if (e.code == "email-already-in-use") {
-          err = "email-already-in-use";
-          return false;
-        }
+        if (filename != null){
+          try {
+            var ref = FirebaseStorage.instance.ref('Images')
+                .child('Users')
+                .child('$id')
+                .child('$filename');
+            await ref.putFile(imageTemporary!);
+            imageurl = await ref.getDownloadURL();
+          } on FirebaseAuthException catch (e) {
+            print('asdasd');
+            print(e.toString());
+          }
       }
-    }
-    else{
-      try {
-        final authResult = await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(email: email, password: password)
-            .then((result) {
-          result.user!.updateDisplayName(Name);
-          id = result.user?.uid;
-        });
-
-        try {
-          var ref = FirebaseStorage.instance.ref('images').child('$filename');
-          await ref.putFile(imageTemporary!);
-          imageurl = await ref.getDownloadURL();
-        } on FirebaseAuthException catch (e) {
-          print('asdasd');
-          print(e.toString());
+        else {
+          imageurl = 'https://firebasestorage.googleapis.com/v0/b/flutter-maps-345318.appspot.com/o/Images%2FUsers%2FPlace_holder%2Fplace_holder.jpg?alt=media&token=6a90fef2-9e24-4874-a740-0c34fab2c9bf';
         }
 
         await FirebaseFirestore.instance.collection("users").doc(id).set(
@@ -120,7 +92,6 @@ class Auth implements BaseAuth {
           return false;
         }
       }
-    }
     return true;
   }
 
