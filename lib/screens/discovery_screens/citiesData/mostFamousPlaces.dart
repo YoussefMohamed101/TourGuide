@@ -69,7 +69,7 @@ class mostFamousePlaces extends StatelessWidget {
                                     decoration: BoxDecoration(
                                       image: DecorationImage(
                                         image: CachedNetworkImageProvider(
-                                            '${snapshot.data[index]['img'][0]}'),
+                                            '${snapshot.data[index]['imgURL']}'),
                                         fit: BoxFit.cover,
                                       ),
                                       borderRadius: const BorderRadius.only(
@@ -147,7 +147,10 @@ class mostFamousePlaces extends StatelessWidget {
                                                         MaterialPageRoute(
                                                             builder: (context) => FamousePlacesDetails(),
                                                             settings: RouteSettings(
-                                                              arguments: snapshot.data[index],
+                                                              arguments: [
+                                                                snapshot.data[index]['id'],
+                                                                cityId
+                                                              ],
                                                             )
                                                         ));
                                                   },

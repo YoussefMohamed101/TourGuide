@@ -127,7 +127,7 @@ class _home_screenState extends State<home_screen> {
                                 children: [
                                   Text(
                                     'Hi, ${snapshot.data[0]}',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 30,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
@@ -140,14 +140,14 @@ class _home_screenState extends State<home_screen> {
                                   Row(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Icon(
+                                      const Icon(
                                         Icons.location_on,
                                         color: Colors.white,
                                         size: 15,
                                       ),
-                                      Text(
+                                      const Text(
                                         'Current Location, ',
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontSize: 13,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.white,
@@ -157,14 +157,14 @@ class _home_screenState extends State<home_screen> {
                                         height: 20,
                                         child: TextButton(
                                             style: TextButton.styleFrom(
-                                              padding: EdgeInsets.all(0.0),
+                                              padding: const EdgeInsets.all(0.0),
                                               alignment: Alignment.topLeft,
                                               primary: Colors.transparent,
                                             ),
                                             onPressed: () {},
-                                            child: Text(
+                                            child: const Text(
                                               'Egypt',
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 fontSize: 13,
                                                 fontWeight: FontWeight.bold,
                                                 color: Colors.white,
@@ -212,7 +212,7 @@ class _home_screenState extends State<home_screen> {
                                   spreadRadius: 5,
                                   blurRadius: 7,
                                   offset:
-                                  Offset(1, 3), // changes position of shadow
+                                  const Offset(1, 3), // changes position of shadow
                                 ),
                               ],
                             ),
@@ -220,11 +220,11 @@ class _home_screenState extends State<home_screen> {
                                 padding: const EdgeInsets.only(left: 15.0),
                                 child: Row(
                                   children: [
-                                    Icon(Icons.search,color: Color.fromRGBO(249, 168, 38, 1)),
+                                    const Icon(Icons.search,color: const Color.fromRGBO(249, 168, 38, 1)),
                                     SizedBox(
                                       width: MediaQuery.of(context).size.width*0.02,
                                     ),
-                                    Text('Where do you want to go?',style: TextStyle(
+                                    const Text('Where do you want to go?',style: TextStyle(
                                       color: Color.fromRGBO(249, 168, 38, 1),
                                       fontWeight: FontWeight.bold,
                                       fontSize: 18,
@@ -255,9 +255,9 @@ class _home_screenState extends State<home_screen> {
                                     bottom: 15.0,
                                     left: 2,
                                   ),
-                                  child: Text(
+                                  child: const Text(
                                     'What do you want to do?',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -280,7 +280,7 @@ class _home_screenState extends State<home_screen> {
                                                   builder: (context) => discovery_screen(),
                                                 ));
                                           },
-                                          icon: Icon(
+                                          icon: const Icon(
                                             Icons.add_location_outlined,
                                             size: 24.0,
                                           ),
@@ -288,13 +288,13 @@ class _home_screenState extends State<home_screen> {
                                           style: ElevatedButton.styleFrom(
                                             primary: Colors.white,
                                             onPrimary:
-                                            Color.fromRGBO(249, 168, 38, 1),
+                                            const Color.fromRGBO(249, 168, 38, 1),
                                             //shadowColor: Color.fromRGBO(249, 0, 38, 1),
                                             elevation: 10,
                                           ),
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 30,
                                       ),
                                       Expanded(
@@ -310,7 +310,7 @@ class _home_screenState extends State<home_screen> {
 
                                             });
                                           },
-                                          icon: Icon(
+                                          icon: const Icon(
                                             Icons.map,
                                             size: 24.0,
                                           ),
@@ -318,7 +318,7 @@ class _home_screenState extends State<home_screen> {
                                           style: ElevatedButton.styleFrom(
                                             primary: Colors.white,
                                             onPrimary:
-                                            Color.fromRGBO(249, 168, 38, 1),
+                                            const Color.fromRGBO(249, 168, 38, 1),
                                             //shadowColor: Color.fromRGBO(249, 0, 38, 1),
                                             elevation: 10,
                                           ),
@@ -342,14 +342,14 @@ class _home_screenState extends State<home_screen> {
                                       onPressed: () {},
                                       child: Text(
                                         'Generate plan'.toUpperCase(),
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.white,
                                         ),
                                       ),
                                       style: ElevatedButton.styleFrom(
-                                        primary: Color.fromRGBO(249, 168, 38, 1),
+                                        primary: const Color.fromRGBO(249, 168, 38, 1),
                                         elevation: 5,
                                       ),
                                     ),
@@ -385,7 +385,7 @@ class _home_screenState extends State<home_screen> {
                           ),
                           SliverGrid(
                             gridDelegate:
-                            SliverGridDelegateWithMaxCrossAxisExtent(
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
                               maxCrossAxisExtent: 200.0,
                               mainAxisSpacing: 30.0,
                               crossAxisSpacing: 20.0,
@@ -405,7 +405,10 @@ class _home_screenState extends State<home_screen> {
                 ],
               );
             }
-            return Center(child: CircularProgressIndicator());
+            if(snapshot.hasError){
+              return const Text('Please check your connection and try again');
+            }
+            return const Center(child: CircularProgressIndicator());
           },
         ),
       );
@@ -437,7 +440,7 @@ class _home_screenState extends State<home_screen> {
               children: [
                 Text(
                   '${ProgDetails.title}',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -448,7 +451,7 @@ class _home_screenState extends State<home_screen> {
                 ),
                 Text(
                   '${ProgDetails.shortDescription}',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -459,14 +462,14 @@ class _home_screenState extends State<home_screen> {
                 ),
                 Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.location_on,
                       color: Colors.white,
                       size: 18,
                     ),
                     Text(
                       '${ProgDetails.goverName}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -477,7 +480,7 @@ class _home_screenState extends State<home_screen> {
               ],
             ),
           ),
-          Icon(
+          const Icon(
             Icons.bookmark,
             color: Color.fromRGBO(249, 168, 38, 1),
             size: 30,

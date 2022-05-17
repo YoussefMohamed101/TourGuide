@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:untitled2/screens/aiCamera/aiCamera.dart';
 import 'package:untitled2/screens/discovery_screens/home_screen.dart';
+import 'package:untitled2/screens/discovery_screens/searchScreen.dart';
 import 'package:untitled2/screens/home_layout.dart';
 import 'package:untitled2/screens/Intro/First_intro.dart';
 import 'package:untitled2/screens/discovery_screens/citiesData/city_descripton.dart';
@@ -44,6 +45,8 @@ class MyApp extends StatelessWidget {
         ),
 
       ),
+      // home: Show_Maps(),
+      // home: searchScreen(),
       home: islogin? Cupertinolayout(): Register(),
     );
   }

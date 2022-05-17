@@ -7,8 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:untitled2/screens/discovery_screens/citiesData/mostFamousPlaces.dart';
 import 'package:untitled2/screens/discovery_screens/discovery_screen.dart';
+import 'package:untitled2/screens/discovery_screens/personalGuidersCity.dart';
+import 'package:untitled2/screens/maps/ShowMap.dart';
 import 'package:untitled2/services/GetData.dart';
 import 'package:untitled2/services/authentication.dart';
+
+import '../cityPlans.dart';
 
 class imgModel {
   final imgURl;
@@ -74,7 +78,9 @@ class _city_previewState extends State<city_preview> {
 
   @override
   Widget build(BuildContext context) {
-    var city = (ModalRoute.of(context)!.settings.arguments as Map);
+    var city = (ModalRoute.of(context)!.settings.arguments as String);
+    late final Future CityData = getCitydata(city);
+    print(city);
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -89,7 +95,7 @@ class _city_previewState extends State<city_preview> {
             onPressed: () {
               Navigator.pop(context);
             },
-            icon: Icon(
+            icon: const Icon(
               Icons.keyboard_arrow_left,
               color: Color.fromRGBO(249, 168, 38, 1),
               size: 50,
@@ -111,277 +117,309 @@ class _city_previewState extends State<city_preview> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Container(
-            alignment: Alignment.bottomLeft,
-            width: double.infinity,
-            height: MediaQuery.of(context).size.height * 0.3,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: CachedNetworkImageProvider('${city['imgURL']}'),
-                fit: BoxFit.cover,
-                colorFilter: ColorFilter.mode(
-                    Colors.black.withOpacity(0.1), BlendMode.darken),
-              ),
-            ),
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                vertical: MediaQuery.of(context).size.height * 0.02,
-                horizontal: MediaQuery.of(context).size.width * 0.05,
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.location_on,
-                    color: Colors.white,
-                    size: 40,
-                  ),
-                  Text(
-                    '${city['name']}',
-                    style: TextStyle(
-                      fontSize: 40,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+      body: FutureBuilder(
+        future: CityData,
+        builder: (context, AsyncSnapshot snapshot) {
+          if(snapshot.hasData){
+            print(snapshot.data);
+            return Column(
+              children: [
+                AspectRatio(
+                  aspectRatio: 12 / 9,
+                  child: Container(
+                    alignment: Alignment.bottomLeft,
+                    width: double.infinity,
+                    //height: MediaQuery.of(context).size.height * 0.35,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: CachedNetworkImageProvider('${snapshot.data[0]['imgURL']}'),
+                        fit: BoxFit.cover,
+                        colorFilter: ColorFilter.mode(
+                            Colors.black.withOpacity(0.1), BlendMode.darken),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height*0.01),
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height*0.045,
-                      child: Stack(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: MediaQuery.of(context).size.height * 0.02,
+                        horizontal: MediaQuery.of(context).size.width * 0.05,
+                      ),
+                      child: Row(
                         children: [
-                          Container(
-                            padding: EdgeInsets.only(
-                              bottom: MediaQuery.of(context).size.height*0.01,
-                            ),
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.flag,
-                                  size: 30,
-                                  color: Color.fromRGBO(249, 168, 38, 1),
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Text(
-                                  'Suggestions Plans',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                  ),
-                                ),
-                                // SizedBox(
-                                //   width: 210,
-                                // ),
-                                Expanded(
-                                  child: Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Icon(
-                                      Icons.arrow_forward_ios,
-                                      size: 20,
-                                      color: Color.fromRGBO(249, 168, 38, 1),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
+                          const Icon(
+                            Icons.location_on,
+                            color: Colors.white,
+                            size: 40,
                           ),
-                          SizedBox.expand(
-                            child: Material(
-                                type: MaterialType.transparency,
-                                child: InkWell(onTap: () {},)
+                          Text(
+                            '${snapshot.data[0]['name']}',
+                            style: const TextStyle(
+                              fontSize: 40,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height*0.01),
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height*0.045,
-                      child: Stack(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.only(
-                              bottom: MediaQuery.of(context).size.height*0.01,
-                            ),
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.camera_alt,
-                                  size: 30,
-                                  color: Color.fromRGBO(249, 168, 38, 1),
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Text(
-                                  'The Most Famous Sites',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                  ),
-                                ),
-                                // SizedBox(
-                                //   width: 210,
-                                // ),
-                                Expanded(
-                                  child: Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Icon(
-                                      Icons.arrow_forward_ios,
-                                      size: 20,
-                                      color: Color.fromRGBO(249, 168, 38, 1),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox.expand(
-                            child: Material(
-                                type: MaterialType.transparency,
-                                child: InkWell(onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => mostFamousePlaces(),
-                                        settings: RouteSettings(
-                                          arguments: city['id'],
-                                        )
-                                      ));
-                                },)
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height*0.01),
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height*0.045,
-                      child: Stack(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.only(
-                              bottom: MediaQuery.of(context).size.height*0.01,
-                            ),
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.remove_red_eye,
-                                  size: 30,
-                                  color: Color.fromRGBO(249, 168, 38, 1),
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Text(
-                                  'Personal Guider',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                  ),
-                                ),
-                                // SizedBox(
-                                //   width: 210,
-                                // ),
-                                Expanded(
-                                  child: Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Icon(
-                                      Icons.arrow_forward_ios,
-                                      size: 20,
-                                      color: Color.fromRGBO(249, 168, 38, 1),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox.expand(
-                            child: Material(
-                                type: MaterialType.transparency,
-                                child: InkWell(onTap: () {},)
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: Row(
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
                       children: [
-                        Text(
-                          'Suggestions Plans',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                        Padding(
+                          padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height*0.01),
+                          child: SizedBox(
+                            height: MediaQuery.of(context).size.height*0.045,
+                            child: Stack(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.only(
+                                    bottom: MediaQuery.of(context).size.height*0.01,
+                                  ),
+                                  decoration: const BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.flag,
+                                        size: 30,
+                                        color: Color.fromRGBO(249, 168, 38, 1),
+                                      ),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      const Text(
+                                        'Suggestions Plans',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                      // SizedBox(
+                                      //   width: 210,
+                                      // ),
+                                      const Expanded(
+                                        child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Icon(
+                                            Icons.arrow_forward_ios,
+                                            size: 20,
+                                            color: Color.fromRGBO(249, 168, 38, 1),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox.expand(
+                                  child: Material(
+                                      type: MaterialType.transparency,
+                                      child: InkWell(onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => const cityPlans(),
+                                            )
+                                        );
+                                      },)
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        SizedBox(
-                          width: 10,
+                        Padding(
+                          padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height*0.01),
+                          child: SizedBox(
+                            height: MediaQuery.of(context).size.height*0.045,
+                            child: Stack(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.only(
+                                    bottom: MediaQuery.of(context).size.height*0.01,
+                                  ),
+                                  decoration: const BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.camera_alt,
+                                        size: 30,
+                                        color: Color.fromRGBO(249, 168, 38, 1),
+                                      ),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      const Text(
+                                        'The Most Famous Sites',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                      // SizedBox(
+                                      //   width: 210,
+                                      // ),
+                                      const Expanded(
+                                        child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Icon(
+                                            Icons.arrow_forward_ios,
+                                            size: 20,
+                                            color: Color.fromRGBO(249, 168, 38, 1),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox.expand(
+                                  child: Material(
+                                      type: MaterialType.transparency,
+                                      child: InkWell(onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => mostFamousePlaces(),
+                                                settings: RouteSettings(
+                                                  arguments: snapshot.data[0]['id'],
+                                                )
+                                            ));
+                                      },)
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                        Icon(
-                          Icons.keyboard_arrow_down,
-                          size: 30,
+                        Padding(
+                          padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height*0.01),
+                          child: SizedBox(
+                            height: MediaQuery.of(context).size.height*0.045,
+                            child: Stack(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.only(
+                                    bottom: MediaQuery.of(context).size.height*0.01,
+                                  ),
+                                  decoration: const BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.remove_red_eye,
+                                        size: 30,
+                                        color: Color.fromRGBO(249, 168, 38, 1),
+                                      ),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      const Text(
+                                        'Personal Guider',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                      // SizedBox(
+                                      //   width: 210,
+                                      // ),
+                                      const Expanded(
+                                        child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Icon(
+                                            Icons.arrow_forward_ios,
+                                            size: 20,
+                                            color: Color.fromRGBO(249, 168, 38, 1),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox.expand(
+                                  child: Material(
+                                      type: MaterialType.transparency,
+                                      child: InkWell(onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => personalGuidersCity(),
+                                            settings: RouteSettings(
+                                              arguments: snapshot.data[0]['name'],
+                                            ),
+                                          ),
+                                        );
+                                      },)
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: Row(
+                            children: [
+                              const Text(
+                                'Suggestions Plans',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              const Icon(
+                                Icons.keyboard_arrow_down,
+                                size: 30,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              top: 10.0,
+                            ),
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, index) =>
+                                  buildPlansItem(imgDetails[index]),
+                              separatorBuilder: (context, index) => const SizedBox(
+                                width: 20,
+                              ),
+                              itemCount: imgDetails.length,
+                            ),
+                          ),
                         ),
                       ],
                     ),
                   ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: 10.0,
-                      ),
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) =>
-                            buildPlansItem(imgDetails[index]),
-                        separatorBuilder: (context, index) => SizedBox(
-                          width: 20,
-                        ),
-                        itemCount: imgDetails.length,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+                ),
+              ],
+            );
+          }
+          if(snapshot.hasError){
+            return const Text('Please check your connection and try again');
+          }
+          return const Center(child: CircularProgressIndicator(),);
+        }
       ),
     );
   }
@@ -428,7 +466,7 @@ class _city_previewState extends State<city_preview> {
                         ),
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 10,
                     ),
                     Column(
@@ -460,7 +498,7 @@ class _city_previewState extends State<city_preview> {
               width: MediaQuery.of(context).size.width * 0.8,
               child: Text(
                 '${img.description}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w500,
                 ),

@@ -23,9 +23,9 @@ class ProfileSettings extends StatelessWidget {
           if(snapshot.hasData){
             return Padding(
               padding: EdgeInsets.only(
-                top: MediaQuery.of(context).size.height*0.08,
-                left: MediaQuery.of(context).size.width*0.05,
-                right: MediaQuery.of(context).size.width*0.05,
+                top: MediaQuery.of(context).size.height*0.1,
+                left: MediaQuery.of(context).size.width*0.08,
+                right: MediaQuery.of(context).size.width*0.08,
               ),
               child: Column(
                 //mainAxisAlignment: MainAxisAlignment.center,
@@ -49,6 +49,9 @@ class ProfileSettings extends StatelessWidget {
                                 fontWeight: FontWeight.bold
                             ),
                           ),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height*0.01,
+                          ),
                           Text(
                             '${userdata[2]}',
                             style: const TextStyle(
@@ -60,7 +63,7 @@ class ProfileSettings extends StatelessWidget {
                     ],
                   ),
                   SizedBox(
-                    height: MediaQuery.of(context).size.height*0.04,
+                    height: MediaQuery.of(context).size.height*0.08,
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(
@@ -71,13 +74,50 @@ class ProfileSettings extends StatelessWidget {
                       child: Stack(
                         children: [
                           Container(
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: Colors.black,
-                                ),
-                              ),
+                            padding: EdgeInsets.only(
+                              bottom: MediaQuery.of(context).size.height*0.01,
                             ),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.person_outline,
+                                  size: 30,
+                                  // color: Color.fromRGBO(249, 168, 38, 1),
+                                ),
+                                SizedBox(
+                                  width: MediaQuery.of(context).size.width*0.05,
+                                ),
+                                const Text(
+                                  'My Profile',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox.expand(
+                            child: Material(
+                                type: MaterialType.transparency,
+                                child: InkWell(onTap: () {},)
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height*0.02,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: MediaQuery.of(context).size.width*0.02,
+                    ),
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height*0.045,
+                      child: Stack(
+                        children: [
+                          Container(
                             padding: EdgeInsets.only(
                               bottom: MediaQuery.of(context).size.height*0.01,
                             ),
@@ -93,7 +133,7 @@ class ProfileSettings extends StatelessWidget {
                                 ),
                                 const Text(
                                   'My Plans',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 18,
                                   ),
                                 ),
@@ -122,13 +162,6 @@ class ProfileSettings extends StatelessWidget {
                       child: Stack(
                         children: [
                           Container(
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
                             padding: EdgeInsets.only(
                               bottom: MediaQuery.of(context).size.height*0.01,
                             ),
@@ -144,7 +177,7 @@ class ProfileSettings extends StatelessWidget {
                                 ),
                                 const Text(
                                   'Settings',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 18,
                                   ),
                                 ),
@@ -173,20 +206,13 @@ class ProfileSettings extends StatelessWidget {
                       child: Stack(
                         children: [
                           Container(
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
                             padding: EdgeInsets.only(
                               bottom: MediaQuery.of(context).size.height*0.01,
                             ),
                             child: Row(
                               children: [
                                 const Icon(
-                                  Icons.info_outline,
+                                  Icons.notifications_none_outlined,
                                   size: 30,
                                   // color: Color.fromRGBO(249, 168, 38, 1),
                                 ),
@@ -194,8 +220,8 @@ class ProfileSettings extends StatelessWidget {
                                   width: MediaQuery.of(context).size.width*0.05,
                                 ),
                                 const Text(
-                                  'About App',
-                                  style: const TextStyle(
+                                  'Notifications',
+                                  style: TextStyle(
                                     fontSize: 18,
                                   ),
                                 ),
@@ -212,11 +238,99 @@ class ProfileSettings extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Expanded(
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height*0.02,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: MediaQuery.of(context).size.width*0.02,
+                    ),
                     child: SizedBox(
-                      height: MediaQuery.of(context).size.height*0.2,
+                      height: MediaQuery.of(context).size.height*0.045,
+                      child: Stack(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.only(
+                              bottom: MediaQuery.of(context).size.height*0.01,
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.info_outline,
+                                  size: 30,
+                                  // color: Color.fromRGBO(249, 168, 38, 1),
+                                ),
+                                SizedBox(
+                                  width: MediaQuery.of(context).size.width*0.05,
+                                ),
+                                const Text(
+                                  'About App',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox.expand(
+                            child: Material(
+                                type: MaterialType.transparency,
+                                child: InkWell(onTap: () {},)
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height*0.02,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: MediaQuery.of(context).size.width*0.02,
+                    ),
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height*0.045,
+                      child: Stack(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.only(
+                              bottom: MediaQuery.of(context).size.height*0.01,
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.help_outline,
+                                  size: 30,
+                                  // color: Color.fromRGBO(249, 168, 38, 1),
+                                ),
+                                SizedBox(
+                                  width: MediaQuery.of(context).size.width*0.05,
+                                ),
+                                const Text(
+                                  'Help',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox.expand(
+                            child: Material(
+                                type: MaterialType.transparency,
+                                child: InkWell(onTap: () {},)
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Expanded(
+                  //   child: SizedBox(
+                  //     height: MediaQuery.of(context).size.height*0.2,
+                  //   ),
+                  // ),
                   Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal: MediaQuery.of(context).size.width*0.02,
@@ -229,18 +343,18 @@ class ProfileSettings extends StatelessWidget {
                           Container(
                             decoration: const BoxDecoration(
                               border: Border(
-                                bottom: BorderSide(
+                                top: BorderSide(
                                   color: Colors.black,
                                 ),
                               ),
                             ),
                             padding: EdgeInsets.only(
-                              bottom: MediaQuery.of(context).size.height*0.01,
+                              top: MediaQuery.of(context).size.height*0.01,
                             ),
                             child: Row(
                               children: [
                                 const Icon(
-                                  Icons.exit_to_app,
+                                  Icons.logout,
                                   size: 30,
                                   // color: Color.fromRGBO(249, 168, 38, 1),
                                 ),
@@ -249,7 +363,7 @@ class ProfileSettings extends StatelessWidget {
                                 ),
                                 const Text(
                                   'SignOut',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 18,
                                   ),
                                 ),

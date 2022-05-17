@@ -8,6 +8,7 @@ import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:untitled2/services/location_services.dart';
 
 class Show_Maps extends StatefulWidget {
+  const Show_Maps({Key? key}) : super(key: key);
   @override
   State<Show_Maps> createState() => _Show_MapsState();
 }
@@ -218,7 +219,7 @@ class _Show_MapsState extends State<Show_Maps> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Color.fromRGBO(249, 168, 38, 1),
+        backgroundColor: Color.fromRGBO(249, 168, 38, 1.0),
         onPressed: () => _goToMyCurrLocation(),
         child: Icon(Icons.gps_fixed),
       ),

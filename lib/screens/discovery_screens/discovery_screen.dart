@@ -72,9 +72,9 @@ class _discovery_screenState extends State<discovery_screen> {
             onPressed: () {
               Navigator.pop(context);
             },
-            icon: Icon(
+            icon: const Icon(
               Icons.keyboard_arrow_left,
-              color: Color.fromRGBO(249, 168, 38, 1),
+              color: const Color.fromRGBO(249, 168, 38, 1),
               size: 50,
             )),
         actions: [
@@ -112,7 +112,7 @@ class _discovery_screenState extends State<discovery_screen> {
                         decoration: BoxDecoration(
                           color: Colors.black,
                           image: DecorationImage(
-                            image: AssetImage(
+                            image: const AssetImage(
                                 "lib/img/discovery/discovery background.png"),
                             fit: BoxFit.cover,
                             colorFilter: ColorFilter.mode(
@@ -127,7 +127,7 @@ class _discovery_screenState extends State<discovery_screen> {
                               .size
                               .height * 0.15,
                         ),
-                        child: Text(
+                        child: const Text(
                           'Discovery',
                           style: TextStyle(
                             fontSize: 40,
@@ -151,10 +151,10 @@ class _discovery_screenState extends State<discovery_screen> {
                               .size
                               .width * 0.1,
                         ),
-                        child: Text(
+                        child: const Text(
                           'You can explore different places around the world with just one click',
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -187,13 +187,13 @@ class _discovery_screenState extends State<discovery_screen> {
                                 color: Colors.grey.withOpacity(0.2),
                                 spreadRadius: 5,
                                 blurRadius: 7,
-                                offset: Offset(
+                                offset: const Offset(
                                     1, 3), // changes position of shadow
                               ),
                             ],
                           ),
                           child: TextFormField(
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
                             ),
@@ -205,38 +205,38 @@ class _discovery_screenState extends State<discovery_screen> {
                             },
                             decoration: InputDecoration(
                               hintText: 'Search for Cities',
-                              prefixIcon: Icon(
+                              prefixIcon: const Icon(
                                 Icons.search,
                                 color: Color.fromRGBO(249, 168, 38, 1),
                               ),
-                              hintStyle: TextStyle(
+                              hintStyle: const TextStyle(
                                 color: Color.fromRGBO(249, 168, 38, 1),
                                 fontWeight: FontWeight.bold,
                               ),
-                              errorStyle: TextStyle(
+                              errorStyle: const TextStyle(
                                 color: Colors.red,
                               ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
+                              enabledBorder: const OutlineInputBorder(
+                                borderSide: const BorderSide(
                                   color: Colors.transparent,
                                 ),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
+                                borderSide: const BorderSide(
                                   color: Color.fromRGBO(249, 168, 38, 1),
                                   width: 2,
                                 ),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               errorBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
+                                borderSide: const BorderSide(
                                   color: Colors.red,
                                   width: 2,
                                 ),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               focusedErrorBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
+                                borderSide: const BorderSide(
                                   color: Colors.red,
                                   width: 2,
                                 ),
@@ -279,20 +279,20 @@ class _discovery_screenState extends State<discovery_screen> {
                                       spreadRadius: 1,
                                       blurRadius: 10,
                                       offset:
-                                      Offset(1, 10), // changes position of shadow
+                                      const Offset(1, 10), // changes position of shadow
                                     ),
                                   ],
                                 ),
                                 child: Row(
                                   children: [
-                                    Text(
+                                    const Text(
                                       'Destination',
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 25,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    Icon(
+                                    const Icon(
                                       Icons.keyboard_arrow_down,
                                     ),
                                   ],
@@ -324,7 +324,10 @@ class _discovery_screenState extends State<discovery_screen> {
                 ],
               );
             }
-            return Center(child: CircularProgressIndicator());
+            if(snapshot.hasError){
+              return const Text('Please check your connection and try again');
+            }
+            return const Center(child: CircularProgressIndicator());
           }
 
       ),
@@ -340,7 +343,7 @@ class _discovery_screenState extends State<discovery_screen> {
               MaterialPageRoute(
                 builder: (context) => city_preview(),
                 settings: RouteSettings(
-                  arguments: snapshot,
+                  arguments: snapshot['id'],
                 ),
               ));
         },
@@ -377,14 +380,14 @@ class _discovery_screenState extends State<discovery_screen> {
               ),
               child: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.location_on,
                     color: Colors.white,
                     size: 35,
                   ),
                   Text(
                     '${snapshot['name']}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 30,
                       color: Colors.white,
                       fontWeight: FontWeight.bold,

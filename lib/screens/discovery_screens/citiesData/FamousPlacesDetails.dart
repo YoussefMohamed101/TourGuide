@@ -6,26 +6,36 @@ import 'package:untitled2/services/GetData.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
 class FamousePlacesDetails extends StatefulWidget {
+  const FamousePlacesDetails({Key? key}) : super(key: key);
+
   @override
   State<FamousePlacesDetails> createState() => _FamousePlacesDetailsState();
 }
 
 class _FamousePlacesDetailsState extends State<FamousePlacesDetails> {
   int active = 0;
+
   @override
   Widget build(BuildContext context) {
-    var placeInfo = (ModalRoute.of(context)!.settings.arguments as Map);
-    var numOfopeningPerDay = placeInfo['timesOfWork']['Sunday'].length;
+    List daysName = [
+      'Saturday',
+      'Sunday',
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday'
+    ];
+    var placeInfo = (ModalRoute.of(context)!.settings.arguments as List);
+    // print('*****************************************$placeInfo **************************************');
+    late final Future cityPlaces = getPlacedata(placeInfo);
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        // systemOverlayStyle: isLoading
-        //     ? SystemUiOverlayStyle(
-        //         statusBarIconBrightness: Brightness.dark,
-        //       )
-        //     : SystemUiOverlayStyle(
-        //         statusBarIconBrightness: Brightness.light,
-        //       ),
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarIconBrightness: Brightness.dark,
+          statusBarColor: Colors.transparent,
+        ),
         leading: IconButton(
             onPressed: () {
               Navigator.pop(context);
@@ -36,703 +46,271 @@ class _FamousePlacesDetailsState extends State<FamousePlacesDetails> {
               size: 50,
             )),
       ),
-      body: Column(
-        children: [
-          SizedBox(
-            width: double.infinity,
-            height: MediaQuery.of(context).size.height*0.35,
-            child: Stack(
-              children: [
-                CarouselSlider.builder(
-                  itemCount: placeInfo['img'].length,
-                  itemBuilder: (BuildContext context, int itemIndex, int pageViewIndex) =>
-                      Container(
-                        alignment: Alignment.bottomLeft,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: CachedNetworkImageProvider('${placeInfo['img'][itemIndex]}'),
-                            fit: BoxFit.cover,
-                            colorFilter: ColorFilter.mode(
-                                Colors.black.withOpacity(0.1), BlendMode.darken),
-                          ),
-                        ),
-                      ),
-                  options: CarouselOptions(
-                    height: MediaQuery.of(context).size.height*0.35,
-                    autoPlay: true,
-                    autoPlayAnimationDuration: const Duration(seconds: 1),
-                    onPageChanged: (index, reason) {
-                      setState(() {
-                        active = index;
-                      });
-                    },
-                    autoPlayCurve: Curves.ease,
-                    viewportFraction: 1,
-                    // enableInfiniteScroll: false,
-                    // enlargeCenterPage: true,
-                    // enlargeStrategy: CenterPageEnlargeStrategy.scale
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: AnimatedSmoothIndicator(
-                      activeIndex: active,
-                      count: placeInfo['img'].length,
-                      effect: const ExpandingDotsEffect(
-                        dotWidth:  10.0,
-                        dotHeight:  8.0,
-                        spacing: 6,
-                        radius: 20,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: ListView(
-                //crossAxisAlignment: CrossAxisAlignment.start,
-                padding: EdgeInsets.symmetric(
-                    vertical: MediaQuery.of(context).size.height * 0.01,
-                    horizontal: MediaQuery.of(context).size.width * 0.01),
+      body: FutureBuilder(
+          future: cityPlaces,
+          builder: (context, AsyncSnapshot snapshot) {
+            if (snapshot.hasData) {
+              var numOfOpeningPerDay =
+                  snapshot.data[0]['timesOfWork']['Sunday'].length;
+              return Column(
                 children: [
-                  Text(
-                    '${placeInfo['name']}',
-                    style: const TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
                   SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.02,
-                  ),
-                  Text(
-                    '${placeInfo['information']}',
-                    textAlign: TextAlign.justify,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      //fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.02,
-                  ),
-                  const Text(
-                    'Opening Time:',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.02,
-                  ),
-                  numOfopeningPerDay > 1
-                      ? Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              width: 1.5,
-                              // color: Colors.black,
+                    width: double.infinity,
+                    height: MediaQuery.of(context).size.height * 0.35,
+                    child: Stack(
+                      children: [
+                        CarouselSlider.builder(
+                          itemCount: snapshot.data[0]['img'].length,
+                          itemBuilder: (BuildContext context, int itemIndex,
+                                  int pageViewIndex) =>
+                              Container(
+                            alignment: Alignment.bottomLeft,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: CachedNetworkImageProvider(
+                                    '${snapshot.data[0]['img'][itemIndex]}'),
+                                fit: BoxFit.cover,
+                                colorFilter: ColorFilter.mode(
+                                    Colors.black.withOpacity(0.1),
+                                    BlendMode.darken),
+                              ),
                             ),
                           ),
-                          child: Column(
+                          options: CarouselOptions(
+                            height: MediaQuery.of(context).size.height * 0.35,
+                            autoPlay: true,
+                            autoPlayAnimationDuration:
+                                const Duration(seconds: 1),
+                            onPageChanged: (index, reason) {
+                              setState(() {
+                                active = index;
+                              });
+                            },
+                            autoPlayCurve: Curves.ease,
+                            viewportFraction: 1,
+                            // enableInfiniteScroll: false,
+                            // enlargeCenterPage: true,
+                            // enlargeStrategy: CenterPageEnlargeStrategy.scale
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: AnimatedSmoothIndicator(
+                              activeIndex: active,
+                              count: snapshot.data[0]['img'].length,
+                              effect: const ExpandingDotsEffect(
+                                activeDotColor: Color.fromRGBO(249, 168, 38, 1),
+                                dotWidth: 10.0,
+                                dotHeight: 8.0,
+                                spacing: 6,
+                                radius: 20,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: ListView(
+                        //crossAxisAlignment: CrossAxisAlignment.start,
+                        padding: EdgeInsets.symmetric(
+                            vertical: MediaQuery.of(context).size.height * 0.01,
+                            horizontal:
+                                MediaQuery.of(context).size.width * 0.01),
+                        children: [
+                          Text(
+                            '${snapshot.data[0]['name']}',
+                            style: const TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.02,
+                          ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        'Saturday',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.withOpacity(0.8),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            '${placeInfo['timesOfWork']['Saturday'][0]}',
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.w600,
-                                              color:
-                                                  Colors.grey.withOpacity(0.8),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: MediaQuery.of(context)
-                                                    .size
-                                                    .height *
-                                                0.01,
-                                          ),
-                                          Text(
-                                            '${placeInfo['timesOfWork']['Saturday'][1]}',
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.w600,
-                                              color:
-                                                  Colors.grey.withOpacity(0.8),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        'Sunday',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.withOpacity(0.8),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            '${placeInfo['timesOfWork']['Sunday'][0]}',
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.w600,
-                                              color:
-                                                  Colors.grey.withOpacity(0.8),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: MediaQuery.of(context)
-                                                    .size
-                                                    .height *
-                                                0.01,
-                                          ),
-                                          Text(
-                                            '${placeInfo['timesOfWork']['Sunday'][1]}',
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.w600,
-                                              color:
-                                                  Colors.grey.withOpacity(0.8),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        'Monday',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.withOpacity(0.8),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            '${placeInfo['timesOfWork']['Monday'][0]}',
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.w600,
-                                              color:
-                                                  Colors.grey.withOpacity(0.8),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: MediaQuery.of(context)
-                                                    .size
-                                                    .height *
-                                                0.01,
-                                          ),
-                                          Text(
-                                            '${placeInfo['timesOfWork']['Monday'][1]}',
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.w600,
-                                              color:
-                                                  Colors.grey.withOpacity(0.8),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        'Tuesday',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.withOpacity(0.8),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            '${placeInfo['timesOfWork']['Tuesday'][0]}',
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.w600,
-                                              color:
-                                                  Colors.grey.withOpacity(0.8),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: MediaQuery.of(context)
-                                                    .size
-                                                    .height *
-                                                0.01,
-                                          ),
-                                          Text(
-                                            '${placeInfo['timesOfWork']['Tuesday'][1]}',
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.w600,
-                                              color:
-                                                  Colors.grey.withOpacity(0.8),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        'Wednesday',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.withOpacity(0.8),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            '${placeInfo['timesOfWork']['Wednesday'][0]}',
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.w600,
-                                              color:
-                                                  Colors.grey.withOpacity(0.8),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: MediaQuery.of(context)
-                                                    .size
-                                                    .height *
-                                                0.01,
-                                          ),
-                                          Text(
-                                            '${placeInfo['timesOfWork']['Wednesday'][1]}',
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.w600,
-                                              color:
-                                                  Colors.grey.withOpacity(0.8),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        'Thursday',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.withOpacity(0.8),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            '${placeInfo['timesOfWork']['Thursday'][0]}',
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.w600,
-                                              color:
-                                                  Colors.grey.withOpacity(0.8),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: MediaQuery.of(context)
-                                                    .size
-                                                    .height *
-                                                0.01,
-                                          ),
-                                          Text(
-                                            '${placeInfo['timesOfWork']['Thursday'][1]}',
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.w600,
-                                              color:
-                                                  Colors.grey.withOpacity(0.8),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        'Friday',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.withOpacity(0.8),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            '${placeInfo['timesOfWork']['Friday'][0]}',
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.w600,
-                                              color:
-                                                  Colors.grey.withOpacity(0.8),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: MediaQuery.of(context)
-                                                    .size
-                                                    .height *
-                                                0.01,
-                                          ),
-                                          Text(
-                                            '${placeInfo['timesOfWork']['Friday'][1]}',
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.w600,
-                                              color:
-                                                  Colors.grey.withOpacity(0.8),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
+                              const Icon(Icons.location_on_outlined),
+                              SizedBox(width: MediaQuery.of(context).size.width*0.01,),
+                              Expanded(
+                                child: Text(
+                                  '${snapshot.data[0]['address']}',
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ],
                           ),
-                        )
-                      : Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              width: 1.5,
-                              // color: Colors.black,
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.02,
+                          ),
+                          Text(
+                            '${snapshot.data[0]['information']}',
+                            textAlign: TextAlign.justify,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              //fontWeight: FontWeight.bold,
                             ),
                           ),
-                          child: Column(
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.02,
+                          ),
+                          Row(
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        'Saturday',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.withOpacity(0.8),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        '${placeInfo['timesOfWork']['Saturday'][0]}',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.withOpacity(0.8),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        'Sunday',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.withOpacity(0.8),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        '${placeInfo['timesOfWork']['Sunday'][0]}',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.withOpacity(0.8),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        'Monday',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.withOpacity(0.8),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        '${placeInfo['timesOfWork']['Monday'][0]}',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.withOpacity(0.8),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        'Tuesday',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.withOpacity(0.8),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        '${placeInfo['timesOfWork']['Tuesday'][0]}',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.withOpacity(0.8),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        'Wednesday',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.withOpacity(0.8),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        '${placeInfo['timesOfWork']['Wednesday'][0]}',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.withOpacity(0.8),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        'Thursday',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.withOpacity(0.8),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        '${placeInfo['timesOfWork']['Thursday'][0]}',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.withOpacity(0.8),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        'Friday',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.withOpacity(0.8),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        '${placeInfo['timesOfWork']['Friday'][0]}',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.withOpacity(0.8),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                              const Icon(Icons.timer_outlined),
+                              SizedBox(width: MediaQuery.of(context).size.width*0.01,),
+                              const Text(
+                                'Opening Time:',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ],
                           ),
-                        ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.02,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            fixedSize: const Size(100, 10),
-                            primary: const Color.fromRGBO(249, 168, 38, 1),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.02,
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                width: 1.5,
+                                // color: Colors.black,
+                              ),
+                            ),
+                            child: Column(
+                              children: [
+                                ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  padding: const EdgeInsets.all(0.0),
+                                  scrollDirection: Axis.vertical,
+                                  itemBuilder: (context, index) => Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            '${daysName[index]}',
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w600,
+                                              color:
+                                                  Colors.grey.withOpacity(0.8),
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: numOfOpeningPerDay > 1
+                                              ? Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      '${snapshot.data[0]['timesOfWork']['${daysName[index]}'][0]}',
+                                                      style: TextStyle(
+                                                        fontSize: 20,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color: Colors.grey
+                                                            .withOpacity(0.8),
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      height:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .height *
+                                                              0.01,
+                                                    ),
+                                                    Text(
+                                                      '${snapshot.data[0]['timesOfWork']['${daysName[index]}'][1]}',
+                                                      style: TextStyle(
+                                                        fontSize: 20,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color: Colors.grey
+                                                            .withOpacity(0.8),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )
+                                              : Text(
+                                                  '${snapshot.data[0]['timesOfWork']['${daysName[index]}'][0]}',
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Colors.grey
+                                                        .withOpacity(0.8),
+                                                  ),
+                                                ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  itemCount: daysName.length,
+                                ),
+                              ],
                             ),
                           ),
-                          onPressed: () {},
-                          child: const Text(
-                            'Add to plan',
-                            style: TextStyle(color: Colors.white),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.02,
                           ),
-                        ),
-                      ),
-                      const SizedBox(width: 40),
-                      Expanded(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            fixedSize: const Size(100, 10),
-                            primary: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                              side: const BorderSide(width: 1),
-                            ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  icon: Icon(Icons.next_plan,color: Colors.white,),
+                                  style: ElevatedButton.styleFrom(
+                                    fixedSize: const Size(100, 10),
+                                    primary:
+                                        const Color.fromRGBO(249, 168, 38, 1),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30.0),
+                                    ),
+                                  ),
+                                  onPressed: () {},
+                                  label: const Text(
+                                    'Add to plan',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 40),
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  icon: Icon(Icons.map),
+                                  style: ElevatedButton.styleFrom(
+                                    fixedSize: const Size(100, 10),
+                                    primary: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30.0),
+                                      side: const BorderSide(width: 1),
+                                    ),
+                                  ),
+                                  onPressed: () {},
+                                  label: const Text('View on map'),
+                                ),
+                              ),
+                            ],
                           ),
-                          onPressed: () {},
-                          child: const Text('View on map'),
-                        ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ],
-              ),
-            ),
-          ),
-        ],
-      ),
+              );
+            }
+            return const Center(child: CircularProgressIndicator());
+          }),
     );
   }
 }
