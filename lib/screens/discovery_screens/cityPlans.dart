@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:untitled2/screens/maps/ShowMap.dart';
+import 'package:untitled2/screens/maps/suggestionPlanMap.dart';
 
 class imgModel {
   final imgURl;
@@ -24,13 +25,15 @@ class cityPlans extends StatefulWidget {
   State<cityPlans> createState() => _cityPlansState();
 }
 
-
+int? numberOfSights;
 class _cityPlansState extends State<cityPlans> {
+
   int numberOfDays = 1;
   String strDays = 'Day';
   @override
   Widget build(BuildContext context) {
-    int numberOfSights = 5 * numberOfDays;
+    var city = (ModalRoute.of(context)!.settings.arguments as String);
+    numberOfSights = 5 * numberOfDays;
     List<imgModel> imgDetails = [
       imgModel(
           imgURl: 'lib/img/pexels-mostafa-el-shershaby-3772630.png',
@@ -191,7 +194,7 @@ class _cityPlansState extends State<cityPlans> {
               child: ListView.separated(
                 scrollDirection: Axis.vertical,
                 itemBuilder: (context, index) =>
-                    buildPlansItem(imgDetails[index]),
+                    buildPlansItem(imgDetails[index],city),
                 separatorBuilder: (context, index) => SizedBox(
                   height: 20,
                 ),
@@ -203,7 +206,7 @@ class _cityPlansState extends State<cityPlans> {
       ),
     );
   }
-  Widget buildPlansItem(imgModel img) => Stack(
+  Widget buildPlansItem(imgModel img, String city) => Stack(
     children: [
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -296,7 +299,7 @@ class _cityPlansState extends State<cityPlans> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => Show_Maps(),
+                    builder: (context) => suggestionPlanMap(cityid: city,numberOfSights: numberOfSights,),
                   )
               );
             },

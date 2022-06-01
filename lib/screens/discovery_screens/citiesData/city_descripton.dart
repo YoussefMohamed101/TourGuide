@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:untitled2/screens/discovery_screens/citiesData/mostFamousPlaces.dart';
 import 'package:untitled2/screens/discovery_screens/discovery_screen.dart';
-import 'package:untitled2/screens/discovery_screens/personalGuidersCity.dart';
+import 'package:untitled2/screens/discovery_screens/citiesData/personalGuidersCity.dart';
 import 'package:untitled2/screens/maps/ShowMap.dart';
 import 'package:untitled2/services/GetData.dart';
 import 'package:untitled2/services/authentication.dart';
@@ -225,6 +225,9 @@ class _city_previewState extends State<city_preview> {
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) => const cityPlans(),
+                                              settings: RouteSettings(
+                                                arguments: snapshot.data[0]['id'],
+                                              ),
                                             )
                                         );
                                       },)

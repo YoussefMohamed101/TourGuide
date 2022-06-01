@@ -1,240 +1,292 @@
 import 'dart:async';
 import 'dart:collection';
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
+import 'package:untitled2/screens/discovery_screens/citiesData/FamousPlacesDetails.dart';
+import 'package:untitled2/screens/discovery_screens/citiesData/city_descripton.dart';
+import 'package:untitled2/screens/maps/DirectionsRepo.dart';
+import 'package:untitled2/screens/maps/directions_model.dart';
+import 'package:untitled2/services/GetData.dart';
 import 'package:untitled2/services/location_services.dart';
 
 class Show_Maps extends StatefulWidget {
   const Show_Maps({Key? key}) : super(key: key);
+
   @override
   State<Show_Maps> createState() => _Show_MapsState();
 }
 
-List<Map<String, Object>> markid = [
-  {
-    'MarkerId': 'main',
-    'position': [25.717153892996087, 32.627239376306534],
-    'infoWindow': {'title': 'Karnak Temple', 'snippet': ''}
-  },
-  {
-    'MarkerId': '1',
-    'position': [25.718901397546496, 32.65728279017053],
-    'infoWindow': {'title': 'Karnak Temple', 'snippet': ''}
-  },
-  {
-    'MarkerId': '2',
-    'position': [25.69952344259581, 32.639049044897],
-    'infoWindow': {'title': 'Luxor temple', 'snippet': ''}
-  },
-  {
-    'MarkerId': '3',
-    'position': [25.74021262120803, 32.601406455533045],
-    'infoWindow': {'title': 'Valley of the Kings', 'snippet': ''}
-  },
-  {
-    'MarkerId': '4',
-    'position': [25.73833528636797, 32.606504011053644],
-    'infoWindow': {'title': 'Hatshepsut Temple', 'snippet': ''}
-  },
-  {
-    'MarkerId': '5',
-    'position': [25.707748536371035, 32.644473998157565],
-    'infoWindow': {'title': 'Luxor Museum', 'snippet': ''}
-  },
-  {
-    'MarkerId': '6',
-    'position': [25.737335699693887, 32.60773470000879],
-    'infoWindow': {
-      'title': 'Deir el-Bahari (the mortuary temple of Hatshepsut)',
-      'snippet': ''
-    }
-  },
-  {
-    'MarkerId': '7',
-    'position': [25.71936384616683, 32.60136155768057],
-    'infoWindow': {'title': 'Habu . city', 'snippet': ''}
-  },
-  {
-    'MarkerId': '8',
-    'position': [25.720660327905865, 32.61043682454598],
-    'infoWindow': {'title': 'thankful giant', 'snippet': ''}
-  },
-  {
-    'MarkerId': '9',
-    'position': [25.72808266090975, 32.60142500000878],
-    'infoWindow': {'title': 'Deir el-Madina', 'snippet': ''}
-  },
-  {
-    'MarkerId': '10',
-    'position': [25.71169844959537, 32.655199088963926],
-    'infoWindow': {'title': 'mut temple', 'snippet': ''}
-  },
-  {
-    'MarkerId': '11',
-    'position': [25.728053191383683, 32.610452153381864],
-    'infoWindow': {'title': 'ramesium', 'snippet': ''}
-  },
-  {
-    'MarkerId': '12',
-    'position': [25.71694019759933, 32.658626060128036],
-    'infoWindow': {'title': 'holy lake', 'snippet': ''}
-  },
-  {
-    'MarkerId': '13',
-    'position': [25.728639174801547, 32.59291385338187],
-    'infoWindow': {'title': 'Valley of the Queens', 'snippet': ''}
-  },
-  {
-    'MarkerId': '14',
-    'position': [25.70235482074173, 32.63988878221777],
-    'infoWindow': {'title': 'Mummification Museum', 'snippet': ''}
-  },
-  {
-    'MarkerId': '15',
-    'position': [25.732742718801365, 32.62811748466523],
-    'infoWindow': {'title': 'Temple of Seti I', 'snippet': ''}
-  },
-  {
-    'MarkerId': '16',
-    'position': [25.683627781875092, 32.622824188963925],
-    'infoWindow': {'title': 'Banana Island', 'snippet': ''}
-  },
-  {
-    'MarkerId': '17',
-    'position': [25.716614430042846, 32.65581130000878],
-    'infoWindow': {'title': 'khansu sat', 'snippet': ''}
-  },
-  {
-    'MarkerId': '18',
-    'position': [25.71946717798471, 32.65616391779981],
-    'infoWindow': {'title': 'rams street', 'snippet': ''}
-  },
-];
-
-
-class _Show_MapsState extends State<Show_Maps> {
-  static List tempposition = markid[0]['position'] as List;
-  static double zoom = 12.2222;
+class _Show_MapsState extends State<Show_Maps> with WidgetsBindingObserver {
+  bool firstEnter = true;
+  Direction? _info;
+  Marker? origin;
+  Marker? destination;
+  FloatingSearchBarController fcontroller = FloatingSearchBarController();
+  bool showLocationButton = true;
+  bool showGetDirection = false;
+  bool showDistanceAndDuration = false;
+  final TextEditingController searchText = TextEditingController();
+  var searchResult;
   static Position? position;
-  Completer<GoogleMapController> _controller = Completer();
+  final Completer<GoogleMapController> _controller = Completer();
   static final CameraPosition _myCameraPosition = CameraPosition(
-    target: position == null
-        ? LatLng(25.71946717798471, 32.65616391779981)
-        : LatLng(position!.latitude, position!.longitude),
+    target: LatLng(position!.latitude, position!.longitude),
     zoom: 16.4746,
   );
-  static final CameraPosition _tempCameraPosition = CameraPosition(
-    target: LatLng(tempposition[0], tempposition[1]),
-    // target: position == null
-    //     ? LatLng(25.71946717798471, 32.65616391779981)
-    //     : LatLng(position!.latitude, position!.longitude),
-    zoom: zoom,
-  );
+  static CameraPosition? _disCameraPosition;
+  static CameraPosition? _polylineCameraPosition;
+  List filterResult = [];
 
-  Future<void> getMyLocation() async {
-    await LocationService.determinePosition();
-    position = await Geolocator.getLastKnownPosition().whenComplete(() {
-      setState((){});
-    });
+  Future<void> getMylastLocation() async {
+    position = await LocationService.getLastKnownPosition();
+    if (position != null) {
+      setState(() {});
+    }
   }
 
-  var myMarkers = HashSet<Marker>();
+  Future<void> getMyLocation() async {
+    position = await LocationService.determinePosition();
+    if (position != null) {
+      setState(() {});
+    }
+  }
 
-  Future<void> _goToMyCurrLocation() async {
-    //await getMyLocation();
-    await getMyLocation();
-    print('${position?.latitude},  ${position?.longitude}');
+  Future<void> goToMyCurrLocation() async {
+    getMyLocation();
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(_myCameraPosition));
+  }
+
+  void buildDestinationCamera(var postion) {
+    _disCameraPosition = CameraPosition(
+      target: LatLng(postion[0], postion[1]),
+      zoom: 16.4746,
+    );
+  }
+
+  Future<void> goTodisLocation(var postion) async {
+    buildDestinationCamera(postion);
+    final GoogleMapController controller = await _controller.future;
+    controller
+        .animateCamera(CameraUpdate.newCameraPosition(_disCameraPosition!));
+  }
+
+  Future<void> polylineCamera() async {
+    var center = [
+      (origin!.position.latitude + destination!.position.latitude)/2,
+      (origin!.position.longitude + destination!.position.longitude)/2,
+    ];
+    print(center);
+    _polylineCameraPosition = CameraPosition(
+      target: LatLng(center[0], center[1]),
+      zoom: 7.4746,
+    );
+    final GoogleMapController controller = await _controller.future;
+    controller
+        .animateCamera(CameraUpdate.newCameraPosition(_polylineCameraPosition!));
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    for (var i = 1; i < markid.length; i++) {
-      var markid1 = markid[i]['MarkerId'] as String;
-      List position = markid[i]['position'] as List;
-      Map infoWindow = markid[i]['infoWindow'] as Map;
-
-      myMarkers.add(
-        Marker(
-            markerId: MarkerId(markid1),
-            position: LatLng(position[0], position[1]),
-            infoWindow: InfoWindow(
-                title: infoWindow['title'],
-                snippet: infoWindow['snippet'])),
-      );
+    WidgetsBinding.instance?.addObserver(this);
+    getMylastLocation();
+    if (position == null) {
+      getMyLocation();
     }
-    //print("${position!.longitude},and ${position!.latitude}");
+    searchResult = searchEngine();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    WidgetsBinding.instance?.removeObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      setState(() {
+        firstEnter = true;
+      });
+    }
+  }
+
+  bool checkPermission() {
+    if (LocationService.permission == LocationPermission.denied) {
+      return false;
+    } else if (LocationService.permission == LocationPermission.deniedForever) {
+      return false;
+    }
+    return true;
   }
 
   @override
   Widget build(BuildContext context) {
+    var permission = checkPermission();
+    if (!permission && firstEnter) {
+      getMyLocation();
+      firstEnter = false;
+    }
+    filterResult = [];
     return Scaffold(
-      // drawer: Drawer(),
-      // drawerEdgeDragWidth: 10,
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Color.fromRGBO(249, 168, 38, 1),
-        title: Text(
+        backgroundColor: const Color.fromRGBO(249, 168, 38, 1),
+        title: const Text(
           'First Google Map',
           style: TextStyle(
             color: Colors.white,
           ),
         ),
       ),
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          //position != null?
-          GoogleMap(
-                  onLongPress: (LatLng position) {
-                    print("${position.latitude},   ${position.longitude}");
-                  },
-                  mapToolbarEnabled: false,
-                  rotateGesturesEnabled: true,
-                  zoomControlsEnabled: false,
-                  myLocationEnabled: true,
-                  myLocationButtonEnabled: false,
-                  mapType: MapType.normal,
-                  initialCameraPosition: _tempCameraPosition,
-                  onMapCreated: (GoogleMapController controller) {
-                    _controller.complete(controller);
-                  },
-                  markers: Set.from(myMarkers),
-                ),
-              // : Center(
-              //     child: Container(
-              //       child: CircularProgressIndicator(
-              //         color: Color.fromRGBO(249, 168, 38, 1),
-              //       ),
-              //     ),
-              //   ),
-          //buildFloatingSearchBar(),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Color.fromRGBO(249, 168, 38, 1.0),
-        onPressed: () => _goToMyCurrLocation(),
-        child: Icon(Icons.gps_fixed),
-      ),
-    );
-
-    return Scaffold(
-      // This is handled by the search bar itself.
-      resizeToAvoidBottomInset: false,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          // buildMap(),
-          //buildBottomNavigationBar(),
-          buildFloatingSearchBar(),
-        ],
+      body: FutureBuilder(
+          future: searchResult,
+          builder: (context, AsyncSnapshot snapshot) {
+            if (snapshot.hasData) {
+              for (int i = 0; i < snapshot.data.length; i++) {
+                if (snapshot.data[i]['name'].toString().length <
+                    searchText.text.length) {
+                  continue;
+                }
+                if (snapshot.data[i]['name']
+                        .toString()
+                        .toLowerCase()
+                        .substring(0, searchText.text.length) ==
+                    searchText.text.toLowerCase()) {
+                  filterResult.add({
+                    'id': snapshot.data[i]['id'],
+                    'name': snapshot.data[i]['name'],
+                    'cityID': snapshot.data[i]['cityID'],
+                    'coordinates': snapshot.data[i]['coordinates'],
+                  });
+                }
+              }
+              return Stack(
+                fit: StackFit.expand,
+                children: [
+                  position != null
+                      ? GoogleMap(
+                          mapToolbarEnabled: false,
+                          rotateGesturesEnabled: true,
+                          zoomControlsEnabled: false,
+                          myLocationEnabled: true,
+                          myLocationButtonEnabled: false,
+                          mapType: MapType.normal,
+                          initialCameraPosition: _myCameraPosition,
+                          onMapCreated: (GoogleMapController controller) {
+                            _controller.complete(controller);
+                          },
+                    polylines: {
+                            if(_info != null)
+                              Polyline(
+                                polylineId: PolylineId('sadasd'),
+                                color: Colors.red,
+                                width: 5,
+                                points: _info!.polylinePoints.map((e) => LatLng(e.latitude, e.longitude)).toList(),
+                              ),
+                    },
+                          markers: {
+                            if (origin != null) origin!,
+                            if (destination != null) destination!,
+                          },
+                        )
+                      : permission == true
+                          ? const Center(
+                              child: CircularProgressIndicator(
+                                color: Color.fromRGBO(249, 168, 38, 1),
+                              ),
+                            )
+                          : Column(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text(
+                                    'Location service is denied pls change it in settings'),
+                                ElevatedButton(
+                                    onPressed: () async {
+                                      await Geolocator.openLocationSettings();
+                                    },
+                                    child: const Text('press')),
+                              ],
+                            ),
+                  buildFloatingSearchBar(),
+                  Visibility(
+                    visible: showGetDirection,
+                    child: Align(
+                      alignment: Alignment(0,0.5),
+                      child: ElevatedButton(onPressed: () async {
+                        showGetDirection = false;
+                        final direction;
+                        if(origin != null && destination != null){
+                          direction = await DirectionsRepo().getDirections(origin: origin!.position, destination: destination!.position);
+                        }
+                        else {
+                          direction = null;
+                        }
+                        await polylineCamera();
+                        setState(() {
+                          _info = direction;
+                        });
+            }, child: Text('Get Direction')),
+                    ),
+                  ),
+                  if(_info != null)
+                    Visibility(
+                      visible: showDistanceAndDuration,
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 80.0
+                          ),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 6.0,
+                              horizontal: 12.0,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.yellowAccent,
+                              borderRadius: BorderRadius.circular(20.0),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  offset: Offset(0, 2),
+                                  blurRadius: 6.0,
+                                )
+                              ],
+                            ),
+                            child: Text(
+                              '${_info!.totalDistance}, ${_info!.totalDuration}',
+                              style: const TextStyle(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            }
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }),
+      floatingActionButton: Visibility(
+        visible: showLocationButton,
+        child: FloatingActionButton(
+          backgroundColor: const Color.fromRGBO(249, 168, 38, 1.0),
+          onPressed: () => goToMyCurrLocation(),
+          child: const Icon(Icons.gps_fixed),
+        ),
       ),
     );
   }
@@ -244,14 +296,29 @@ class _Show_MapsState extends State<Show_Maps> {
         MediaQuery.of(context).orientation == Orientation.portrait;
 
     return FloatingSearchBar(
+      controller: fcontroller,
+      onFocusChanged: (isFocused) {
+        if (isFocused) {
+          showLocationButton = false;
+          showDistanceAndDuration = false;
+          showGetDirection = false;
+        } else {
+          showLocationButton = true;
+          showDistanceAndDuration = true;
+          if(origin != null && destination != null){
+            showGetDirection = true;
+          }
+        }
+        setState(() {});
+      },
       automaticallyImplyDrawerHamburger: false,
       automaticallyImplyBackButton: false,
       hint: 'Search...',
       elevation: 6,
-      hintStyle: TextStyle(fontSize: 18),
-      queryStyle: TextStyle(fontSize: 18),
+      hintStyle: const TextStyle(fontSize: 18),
+      queryStyle: const TextStyle(fontSize: 18),
       //padding: EdgeInsets.all(8),
-      margins: EdgeInsets.all(8),
+      margins: const EdgeInsets.all(8),
       borderRadius: BorderRadius.circular(10),
       scrollPadding: const EdgeInsets.only(top: 16, bottom: 50),
       transitionDuration: const Duration(milliseconds: 350),
@@ -262,6 +329,8 @@ class _Show_MapsState extends State<Show_Maps> {
       width: isPortrait ? 350 : 600,
       debounceDelay: const Duration(milliseconds: 500),
       onQueryChanged: (query) {
+        searchText.text = query;
+        setState(() {});
         // Call your model, bloc, controller here.
       },
       // Specify a custom transition to be used for
@@ -277,20 +346,128 @@ class _Show_MapsState extends State<Show_Maps> {
         ),
         FloatingSearchBarAction.searchToClear(
           showIfClosed: true,
-          color: Color.fromRGBO(249, 168, 38, 1),
+          color: const Color.fromRGBO(249, 168, 38, 1),
         ),
       ],
       builder: (context, transition) {
         return ClipRRect(
           borderRadius: BorderRadius.circular(8),
           child: Material(
-            color: Colors.white,
+            color: Colors.white.withOpacity(0.9),
             elevation: 4.0,
             child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: Colors.accents.map((color) {
-                return Container(height: 90, color: color);
-              }).toList(),
+              children: [
+                SingleChildScrollView(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding: const EdgeInsets.all(0.0),
+                    //scrollDirection: Axis.vertical,
+                    itemBuilder: (context, index) => Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: MediaQuery.of(context).size.width * 0.02,
+                          vertical: MediaQuery.of(context).size.height * 0.01,
+                        ),
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.045,
+                          child: Stack(
+                            children: [
+                              Container(
+                                decoration: const BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ),
+                                padding: EdgeInsets.only(
+                                  bottom:
+                                      MediaQuery.of(context).size.height * 0.01,
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.only(
+                                    left: MediaQuery.of(context).size.width *
+                                        0.03,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.location_on_outlined,
+                                        color: Colors.grey,
+                                        size: 30,
+                                        // color: Color.fromRGBO(249, 168, 38, 1),
+                                      ),
+                                      SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.05,
+                                      ),
+                                      Expanded(
+                                        child: Text(
+                                          '${filterResult[index]['name']}',
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                              fontSize: 25,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.grey),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SizedBox.expand(
+                                child: Material(
+                                    type: MaterialType.transparency,
+                                    child: InkWell(
+                                      onTap: () {
+
+                                        origin = Marker(
+                                            markerId: const MarkerId('og'),
+                                            position: LatLng(
+                                                position!.latitude,
+                                                position!.longitude),
+                                            infoWindow: InfoWindow(
+                                                title:
+                                                    '${filterResult[index]['name']}',
+                                                snippet: 'asd'));
+
+                                        destination = Marker(
+                                            markerId: const MarkerId('des'),
+                                            position: LatLng(
+                                                filterResult[index]
+                                                    ['coordinates'][0],
+                                                filterResult[index]
+                                                    ['coordinates'][1]),
+                                            infoWindow: InfoWindow(
+                                                title:
+                                                    '${filterResult[index]['name']}',
+                                                snippet: 'asd'));
+
+                                        _info = null;
+
+                                        showGetDirection = true;
+                                        setState(() {
+                                          showDistanceAndDuration = true;
+                                        });
+
+                                        goTodisLocation(
+                                            filterResult[index]['coordinates']);
+                                        fcontroller.close();
+                                      },
+                                    )),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    itemCount: filterResult.length,
+                  ),
+                ),
+              ],
             ),
           ),
         );
@@ -298,19 +475,3 @@ class _Show_MapsState extends State<Show_Maps> {
     );
   }
 }
-
-// Future<void> _getMyLocation() async {
-//   LocationData _myLocation = await LocationService().getLocation();
-//   _animateCamera(LatLng(_myLocation.latitude, _myLocation.longitude));
-// }
-//
-// Future<void> _animateCamera(LatLng _location) async {
-//   final GoogleMapController controller = await _controller.future;
-//   CameraPosition _cameraPosition = CameraPosition(
-//     target: _location,
-//     zoom: 14.4746,
-//   );
-//   print(
-//       "animating camera to (lat: ${_location.latitude}, long: ${_location.longitude}");
-//   controller.animateCamera(CameraUpdate.newCameraPosition(_cameraPosition));
-// }

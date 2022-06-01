@@ -8,6 +8,7 @@ var cityData = [];
 var placesData = [];
 var tourGuidersData = [];
 var searchList = [];
+var cityCordData = [];
 
 getUser() async {
   Auth auth = Auth();
@@ -118,6 +119,7 @@ searchEngine() async {
             {
               'id' : element.data()['id'],
               'name': element.data()['name'],
+              'coordinates': element.data()['coordinates'],
             }
         );
       }
@@ -131,6 +133,8 @@ searchEngine() async {
                 'id' : element.data()['id'],
                 'name': element.data()['name'],
                 'cityID': index['id'],
+                'coordinates': element.data()['coordinates'],
+
               }
           );
         }
@@ -141,6 +145,63 @@ searchEngine() async {
   // print(searchList);
   return searchList..shuffle();
 }
+
+getCityCoordinates(var id, var limit) async {
+  var governID= [];
+  var places= [];
+  try {
+    var city = FirebaseFirestore.instance.collection("Governments");
+    await city.where('id',isEqualTo: id).get().then((value) {
+      cityCordData = [];
+      for (var element in value.docs) {
+        governID.add(
+            {
+              'id' : element.data()['id'],
+              'coordinates': element.data()['coordinates'],
+              'name': element.data()['name'],
+            }
+        );
+      }
+    });
+
+    await city
+        .doc('${governID[0]['id']}')
+        .collection('info')
+        .limit(limit)
+        .get()
+        .then((value) {
+      for (var item in value.docs) {
+        places.add({
+          'id': item.data()['id'],
+          'coordinates': item.data()['coordinates'],
+          'name': item.data()['name'],
+          'img': item.data()['img'][0],
+          'cityID': governID[0]['id'],
+          'information': item.data()['information'],
+
+        });
+      }
+    });
+  }
+  catch (e) {
+    print('**************************************');
+    print(e.toString());
+  }
+
+  cityCordData.add({
+    'city' : governID,
+    'places' : places
+  });
+  return cityCordData;
+}
+//
+// getCityLocation(var id) async{
+//   await FirebaseFirestore.instance.collection("Governments").where('id',isEqualTo: id).get().then((value) {
+//     for (var element in value.docs) {
+//       print(element.data());
+//     }
+//   });
+// }
 
 //
 // getPlaces(var id) async {

@@ -27,9 +27,7 @@ class _RegisterState extends State<Register> {
   File? _image;
   XFile? photo;
   File? imageTemporary;
-  //late final savedImage;
   String? fileName;
-  //late var imageurl;
   Future getImagefromcamera() async {
     photo = await ImagePicker().pickImage(source: ImageSource.camera,imageQuality: 25);
     imageTemporary = File(photo!.path);

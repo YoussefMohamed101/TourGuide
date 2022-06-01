@@ -57,14 +57,6 @@ List<imgModel> ProgDetails = [
 
 class _home_screenState extends State<home_screen> {
 
-  // List<User> user = [
-  //   User(
-  //       id: '1',
-  //       Name: 'user',
-  //       imgURl: 'lib/img/home/hema.png',
-  //       CurrentLocation: 'Egypt'),
-  // ];
-
   bool isLoading = true; //set loading to false
 
   void startTimer() {
