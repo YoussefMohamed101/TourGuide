@@ -32,19 +32,21 @@ class _cityPlansState extends State<cityPlans> {
   String strDays = 'Day';
   @override
   Widget build(BuildContext context) {
-    var city = (ModalRoute.of(context)!.settings.arguments as String);
-    numberOfSights = 5 * numberOfDays;
+    var city = (ModalRoute.of(context)!.settings.arguments as List);
+    print(city);
+
+    numberOfSights = 3 * numberOfDays;
     List<imgModel> imgDetails = [
       imgModel(
           imgURl: 'lib/img/pexels-mostafa-el-shershaby-3772630.png',
           numOfDays: '${numberOfDays} ${strDays}',
           numOfSights: '${numberOfSights} sights',
-          description: 'Explore Luxor in ${numberOfDays} ${strDays}, visit most popular places'),
+          description: 'Explore ${city[1]} in ${numberOfDays} ${strDays}, visit most popular places'),
       imgModel(
           imgURl: 'lib/img/pexels-mostafa-el-shershaby-37726330.png',
           numOfDays: '${numberOfDays} ${strDays}',
           numOfSights: '${numberOfSights} sights',
-          description: 'Explore Luxor in ${numberOfDays} ${strDays}, visit most popular places'),
+          description: 'Explore ${city[1]} in ${numberOfDays} ${strDays}, visit most popular places'),
     ];
     return Scaffold(
       appBar: AppBar(
@@ -194,7 +196,7 @@ class _cityPlansState extends State<cityPlans> {
               child: ListView.separated(
                 scrollDirection: Axis.vertical,
                 itemBuilder: (context, index) =>
-                    buildPlansItem(imgDetails[index],city),
+                    buildPlansItem(imgDetails[index],city[0]),
                 separatorBuilder: (context, index) => SizedBox(
                   height: 20,
                 ),

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -50,6 +52,7 @@ class _FamousePlacesDetailsState extends State<FamousePlacesDetails> {
           future: cityPlaces,
           builder: (context, AsyncSnapshot snapshot) {
             if (snapshot.hasData) {
+              log(snapshot.toString());
               var numOfOpeningPerDay =
                   snapshot.data[0]['timesOfWork']['Sunday'].length;
               return Column(
@@ -209,48 +212,34 @@ class _FamousePlacesDetailsState extends State<FamousePlacesDetails> {
                                           ),
                                         ),
                                         Expanded(
-                                          child: numOfOpeningPerDay > 1
-                                              ? Column(
+                                          child: Column(
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
                                                   children: [
-                                                    Text(
-                                                      '${snapshot.data[0]['timesOfWork']['${daysName[index]}'][0]}',
-                                                      style: TextStyle(
-                                                        fontSize: 20,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color: Colors.grey
-                                                            .withOpacity(0.8),
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      height:
-                                                          MediaQuery.of(context)
+                                                    ListView.separated(
+                                                      shrinkWrap: true,
+                                                      physics: const NeverScrollableScrollPhysics(),
+                                                      padding: const EdgeInsets.all(0.0),
+                                                            itemBuilder: (context, index2) => Text(
+                                                                '${snapshot.data[0]['timesOfWork']['${daysName[index]}'][index2]}',
+                                                                style: TextStyle(
+                                                                fontSize: 20,
+                                                                fontWeight:
+                                                                FontWeight.w600,
+                                                                color: Colors.grey
+                                                                    .withOpacity(0.8),
+                                                                ),
+                                                            ),
+                                                            separatorBuilder: (context, index2) => SizedBox(
+                                                              height:
+                                                              MediaQuery.of(context)
                                                                   .size
                                                                   .height *
-                                                              0.01,
-                                                    ),
-                                                    Text(
-                                                      '${snapshot.data[0]['timesOfWork']['${daysName[index]}'][1]}',
-                                                      style: TextStyle(
-                                                        fontSize: 20,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color: Colors.grey
-                                                            .withOpacity(0.8),
-                                                      ),
+                                                                  0.01,
+                                                            ),
+                                                            itemCount: numOfOpeningPerDay,
                                                     ),
                                                   ],
-                                                )
-                                              : Text(
-                                                  '${snapshot.data[0]['timesOfWork']['${daysName[index]}'][0]}',
-                                                  style: TextStyle(
-                                                    fontSize: 20,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Colors.grey
-                                                        .withOpacity(0.8),
-                                                  ),
                                                 ),
                                         ),
                                       ],

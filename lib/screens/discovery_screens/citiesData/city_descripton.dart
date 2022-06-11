@@ -226,7 +226,7 @@ class _city_previewState extends State<city_preview> {
                                             MaterialPageRoute(
                                               builder: (context) => const cityPlans(),
                                               settings: RouteSettings(
-                                                arguments: snapshot.data[0]['id'],
+                                                arguments: [snapshot.data[0]['id'],snapshot.data[0]['name']],
                                               ),
                                             )
                                         );

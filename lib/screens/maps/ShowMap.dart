@@ -27,6 +27,7 @@ class _Show_MapsState extends State<Show_Maps> with WidgetsBindingObserver {
   FloatingSearchBarController fcontroller = FloatingSearchBarController();
   bool showLocationButton = true;
   bool showGetDirection = false;
+  bool showCancel = false;
   bool showDistanceAndDuration = false;
   final TextEditingController searchText = TextEditingController();
   var searchResult;
@@ -75,18 +76,19 @@ class _Show_MapsState extends State<Show_Maps> with WidgetsBindingObserver {
   }
 
   Future<void> polylineCamera() async {
-    var center = [
-      (origin!.position.latitude + destination!.position.latitude)/2,
-      (origin!.position.longitude + destination!.position.longitude)/2,
-    ];
-    print(center);
-    _polylineCameraPosition = CameraPosition(
-      target: LatLng(center[0], center[1]),
-      zoom: 7.4746,
-    );
+    // var center = [
+    //   (origin!.position.latitude + destination!.position.latitude)/2,
+    //   (origin!.position.longitude + destination!.position.longitude)/2,
+    // ];
+    // print(center);
+    // _polylineCameraPosition = CameraPosition(
+    //   target: LatLng(center[0], center[1]),
+    //   zoom: 7.4746,
+    // );
     final GoogleMapController controller = await _controller.future;
     controller
-        .animateCamera(CameraUpdate.newCameraPosition(_polylineCameraPosition!));
+        .animateCamera(CameraUpdate.newLatLngBounds(_info!.bounds, 100.0));
+    // .animateCamera(CameraUpdate.newCameraPosition(_polylineCameraPosition!));
   }
 
   @override
@@ -136,16 +138,6 @@ class _Show_MapsState extends State<Show_Maps> with WidgetsBindingObserver {
     filterResult = [];
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: const Color.fromRGBO(249, 168, 38, 1),
-        title: const Text(
-          'First Google Map',
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        ),
-      ),
       body: FutureBuilder(
           future: searchResult,
           builder: (context, AsyncSnapshot snapshot) {
@@ -183,15 +175,17 @@ class _Show_MapsState extends State<Show_Maps> with WidgetsBindingObserver {
                           onMapCreated: (GoogleMapController controller) {
                             _controller.complete(controller);
                           },
-                    polylines: {
-                            if(_info != null)
+                          polylines: {
+                            if (_info != null)
                               Polyline(
                                 polylineId: PolylineId('sadasd'),
                                 color: Colors.red,
                                 width: 5,
-                                points: _info!.polylinePoints.map((e) => LatLng(e.latitude, e.longitude)).toList(),
+                                points: _info!.polylinePoints
+                                    .map((e) => LatLng(e.latitude, e.longitude))
+                                    .toList(),
                               ),
-                    },
+                          },
                           markers: {
                             if (origin != null) origin!,
                             if (destination != null) destination!,
@@ -217,34 +211,81 @@ class _Show_MapsState extends State<Show_Maps> with WidgetsBindingObserver {
                               ],
                             ),
                   buildFloatingSearchBar(),
-                  Visibility(
-                    visible: showGetDirection,
-                    child: Align(
-                      alignment: Alignment(0,0.5),
-                      child: ElevatedButton(onPressed: () async {
-                        showGetDirection = false;
-                        final direction;
-                        if(origin != null && destination != null){
-                          direction = await DirectionsRepo().getDirections(origin: origin!.position, destination: destination!.position);
-                        }
-                        else {
-                          direction = null;
-                        }
-                        await polylineCamera();
-                        setState(() {
-                          _info = direction;
-                        });
-            }, child: Text('Get Direction')),
+                  Align(
+                    alignment: Alignment(0, 0.5),
+                    child: Row(
+                      children: [
+                        Visibility(
+                          visible: showGetDirection,
+                          child: Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: ElevatedButton(
+                                  onPressed: () async {
+                                    showGetDirection = false;
+                                    final direction;
+                                    if (origin != null && destination != null) {
+                                      direction = await DirectionsRepo()
+                                          .getDirections(
+                                              origin: origin!.position,
+                                              destination:
+                                                  destination!.position);
+                                    } else {
+                                      direction = null;
+                                    }
+                                    _info = direction;
+                                    await polylineCamera();
+                                    setState(() {
+                                      showCancel = true;
+                                    });
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Color.fromRGBO(249, 168, 38, 1.0),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                  ),
+                                  child: Text('Get Direction')),
+                            ),
+                          ),
+                        ),
+                        Visibility(
+                          visible: showCancel,
+                          child: Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: ElevatedButton(
+                                  onPressed: () async {
+                                    setState(() {
+                                      _info = null;
+                                      origin = null;
+                                      destination = null;
+                                      showGetDirection = false;
+                                      showCancel = false;
+                                    });
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      side: const BorderSide(width: 1),
+                                    ),
+                                  ),
+                                  child: Text('Cancel')),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  if(_info != null)
+                  if (_info != null)
                     Visibility(
                       visible: showDistanceAndDuration,
                       child: Align(
                         alignment: Alignment.topCenter,
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 80.0
+                          padding: EdgeInsets.symmetric(
+                              vertical: MediaQuery.of(context).size.height*0.15
                           ),
                           child: Container(
                             padding: const EdgeInsets.symmetric(
@@ -284,7 +325,9 @@ class _Show_MapsState extends State<Show_Maps> with WidgetsBindingObserver {
         visible: showLocationButton,
         child: FloatingActionButton(
           backgroundColor: const Color.fromRGBO(249, 168, 38, 1.0),
-          onPressed: () => goToMyCurrLocation(),
+          onPressed: () {
+            goToMyCurrLocation();
+          },
           child: const Icon(Icons.gps_fixed),
         ),
       ),
@@ -305,7 +348,7 @@ class _Show_MapsState extends State<Show_Maps> with WidgetsBindingObserver {
         } else {
           showLocationButton = true;
           showDistanceAndDuration = true;
-          if(origin != null && destination != null){
+          if (origin != null && destination != null) {
             showGetDirection = true;
           }
         }
@@ -317,8 +360,8 @@ class _Show_MapsState extends State<Show_Maps> with WidgetsBindingObserver {
       elevation: 6,
       hintStyle: const TextStyle(fontSize: 18),
       queryStyle: const TextStyle(fontSize: 18),
-      //padding: EdgeInsets.all(8),
-      margins: const EdgeInsets.all(8),
+      // padding: EdgeInsets.all(8),
+      // margins: const EdgeInsets.all(50),
       borderRadius: BorderRadius.circular(10),
       scrollPadding: const EdgeInsets.only(top: 16, bottom: 50),
       transitionDuration: const Duration(milliseconds: 350),
@@ -423,11 +466,9 @@ class _Show_MapsState extends State<Show_Maps> with WidgetsBindingObserver {
                                     type: MaterialType.transparency,
                                     child: InkWell(
                                       onTap: () {
-
                                         origin = Marker(
                                             markerId: const MarkerId('og'),
-                                            position: LatLng(
-                                                position!.latitude,
+                                            position: LatLng(position!.latitude,
                                                 position!.longitude),
                                             infoWindow: InfoWindow(
                                                 title:
@@ -449,6 +490,7 @@ class _Show_MapsState extends State<Show_Maps> with WidgetsBindingObserver {
                                         _info = null;
 
                                         showGetDirection = true;
+                                        showCancel = true;
                                         setState(() {
                                           showDistanceAndDuration = true;
                                         });

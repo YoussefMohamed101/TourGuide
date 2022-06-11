@@ -146,7 +146,7 @@ searchEngine() async {
   return searchList..shuffle();
 }
 
-getCityCoordinates(var id, var limit) async {
+getCityCoordinates(var id) async {
   var governID= [];
   var places= [];
   try {
@@ -167,7 +167,6 @@ getCityCoordinates(var id, var limit) async {
     await city
         .doc('${governID[0]['id']}')
         .collection('info')
-        .limit(limit)
         .get()
         .then((value) {
       for (var item in value.docs) {
@@ -178,6 +177,7 @@ getCityCoordinates(var id, var limit) async {
           'img': item.data()['img'][0],
           'cityID': governID[0]['id'],
           'information': item.data()['information'],
+          'timesOfWork': item.data()['timesOfWork'],
 
         });
       }

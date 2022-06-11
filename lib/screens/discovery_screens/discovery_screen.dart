@@ -161,91 +161,7 @@ class _discovery_screenState extends State<discovery_screen> {
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                          left: MediaQuery
-                              .of(context)
-                              .size
-                              .width * 0.07,
-                          right: MediaQuery
-                              .of(context)
-                              .size
-                              .width * 0.07,
-                          top: MediaQuery
-                              .of(context)
-                              .size
-                              .height * 0.31,
-                        ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(
-                              20.0,
-                            ),
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.2),
-                                spreadRadius: 5,
-                                blurRadius: 7,
-                                offset: const Offset(
-                                    1, 3), // changes position of shadow
-                              ),
-                            ],
-                          ),
-                          child: TextFormField(
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                            onFieldSubmitted: (String value) {
-                              print(value);
-                            },
-                            onChanged: (String value) {
-                              print(value);
-                            },
-                            decoration: InputDecoration(
-                              hintText: 'Search for Cities',
-                              prefixIcon: const Icon(
-                                Icons.search,
-                                color: Color.fromRGBO(249, 168, 38, 1),
-                              ),
-                              hintStyle: const TextStyle(
-                                color: Color.fromRGBO(249, 168, 38, 1),
-                                fontWeight: FontWeight.bold,
-                              ),
-                              errorStyle: const TextStyle(
-                                color: Colors.red,
-                              ),
-                              enabledBorder: const OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Colors.transparent,
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Color.fromRGBO(249, 168, 38, 1),
-                                  width: 2,
-                                ),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Colors.red,
-                                  width: 2,
-                                ),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              focusedErrorBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Colors.red,
-                                  width: 2,
-                                ),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+
                     ],
                   ),
                   Expanded(
@@ -286,7 +202,7 @@ class _discovery_screenState extends State<discovery_screen> {
                                 child: Row(
                                   children: [
                                     const Text(
-                                      'Destination',
+                                      'Explore Cities',
                                       style: const TextStyle(
                                         fontSize: 25,
                                         fontWeight: FontWeight.bold,

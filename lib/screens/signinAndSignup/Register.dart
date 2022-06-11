@@ -120,6 +120,7 @@ class _RegisterState extends State<Register> {
     Timer.periodic(const Duration(seconds: 1), (t) async {
       if(sign){
         await auth.sendEmailVerification();
+        await FirebaseAuth.instance.signOut();
       }
       setState(() {
         if (sign) {

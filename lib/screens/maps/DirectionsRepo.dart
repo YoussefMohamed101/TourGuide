@@ -19,7 +19,7 @@ class DirectionsRepo{
       final response = await _dio.get(
         _baseUrl,
         queryParameters: {
-          'origin': '${origin.latitude},${origin.longitude}',
+          'origin': (origin.latitude == 24.013471353412196 && origin.longitude == 32.87744471727956) ?  '24.019439447067597, 32.86627602383781' :'${origin.latitude},${origin.longitude}',
           'destination': (destination.latitude == 24.013471353412196 && destination.longitude == 32.87744471727956) ?  '24.019439447067597, 32.86627602383781' :'${destination.latitude},${destination.longitude}',
           'key': '$Api_Key'
         }
@@ -45,8 +45,6 @@ class DistanceMatrixRepo{
   }) async{
     _baseUrl = 'https://maps.googleapis.com/maps/api/distancematrix/json?destinations=';
     print('8888888888888888888888888888888888888888');
-    print(origin);
-    print(destination[0]['coordinates']);
     for (var i = 0; i < destination.length; i++) {
       if(destination[i]['id'] == '6w8oa6WWPhzPIDHOCGYW'){
         _baseUrl =

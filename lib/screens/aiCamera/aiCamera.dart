@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -57,7 +58,7 @@ class _AiCameraState extends State<AiCamera> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-            'Smart Camera',
+            'Statues Camera',
           style: TextStyle(
             fontSize: 30
           ),
@@ -71,7 +72,7 @@ class _AiCameraState extends State<AiCamera> {
           : Padding(
               padding: const EdgeInsets.all(15.0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _image == null
                       ? Column(
@@ -94,7 +95,7 @@ class _AiCameraState extends State<AiCamera> {
                               height: MediaQuery.of(context).size.height * 0.02,
                             ),
                             const Text(
-                              "Smart Camera",
+                              "Statues Camera",
                               style: TextStyle(
                                 fontSize: 40,
                                 fontWeight: FontWeight.w600,
@@ -116,10 +117,10 @@ class _AiCameraState extends State<AiCamera> {
                                     fontSize: 20, fontWeight: FontWeight.w300),
                               ),
                             ),
-
                           ],
                         )
                       : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(16.0),
@@ -134,23 +135,31 @@ class _AiCameraState extends State<AiCamera> {
                             SizedBox(
                               height: MediaQuery.of(context).size.height * 0.02,
                             ),
-                            _outputs != null
+                            (_outputs != null && _outputs![0]['confidence'] > 0.8)
                                 ? Text(
-                                    "${_outputs![0]["label"]}",
+                                    "${_outputs![0]['label']}",
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 20.0,
                                       background: Paint()..color = Colors.white,
                                     ),
                                   )
-                                : Container(),
+                                : Text(
+                              "We couldn't figure out this statue,Please try again",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 20.0,
+                                background: Paint()..color = Colors.white,
+                              ),
+                            ),
                             SizedBox(
                               height: MediaQuery.of(context).size.height * 0.02,
                             ),
 
                           ],
                         ),
-                  _outputs != null?
+                  (_outputs != null && _outputs![0]['confidence'] > 0.8)?
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(

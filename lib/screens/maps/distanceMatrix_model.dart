@@ -31,7 +31,6 @@ class DistanceMatrix{
         'durationText': data['elements'][i]['duration']['text'],
       });
     }
-
     return DistanceMatrix(
       distance: distance,
       duration: duration,

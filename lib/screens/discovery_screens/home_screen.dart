@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:untitled2/screens/discovery_screens/discovery_screen.dart';
 import 'package:untitled2/screens/discovery_screens/searchScreen.dart';
+import 'package:untitled2/screens/home_layout.dart';
+import 'package:untitled2/screens/maps/ShowMap.dart';
 import 'package:untitled2/services/GetData.dart';
 import 'package:untitled2/services/authentication.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -298,9 +300,12 @@ class _home_screenState extends State<home_screen> {
                                             //     MaterialPageRoute(
                                             //       builder: (context) => Show_Maps(),
                                             //     ));
-                                            setState(() {
 
-                                            });
+                                            final BottomNavigationBar navigationBar = globalKey.currentWidget! as BottomNavigationBar;
+                                            print(navigationBar);
+                                            navigationBar.onTap!(2);
+
+
                                           },
                                           icon: const Icon(
                                             Icons.map,
