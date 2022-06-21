@@ -45,6 +45,7 @@ class DistanceMatrixRepo{
   }) async{
     _baseUrl = 'https://maps.googleapis.com/maps/api/distancematrix/json?destinations=';
     print('8888888888888888888888888888888888888888');
+    print(origin.toString());
     for (var i = 0; i < destination.length; i++) {
       if(destination[i]['id'] == '6w8oa6WWPhzPIDHOCGYW'){
         _baseUrl =

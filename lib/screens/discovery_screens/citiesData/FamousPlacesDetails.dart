@@ -140,7 +140,9 @@ class _FamousePlacesDetailsState extends State<FamousePlacesDetails> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Icon(Icons.location_on_outlined),
-                              SizedBox(width: MediaQuery.of(context).size.width*0.01,),
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.01,
+                              ),
                               Expanded(
                                 child: Text(
                                   '${snapshot.data[0]['address']}',
@@ -169,7 +171,9 @@ class _FamousePlacesDetailsState extends State<FamousePlacesDetails> {
                           Row(
                             children: [
                               const Icon(Icons.timer_outlined),
-                              SizedBox(width: MediaQuery.of(context).size.width*0.01,),
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.01,
+                              ),
                               const Text(
                                 'Opening Time:',
                                 style: TextStyle(
@@ -213,34 +217,37 @@ class _FamousePlacesDetailsState extends State<FamousePlacesDetails> {
                                         ),
                                         Expanded(
                                           child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    ListView.separated(
-                                                      shrinkWrap: true,
-                                                      physics: const NeverScrollableScrollPhysics(),
-                                                      padding: const EdgeInsets.all(0.0),
-                                                            itemBuilder: (context, index2) => Text(
-                                                                '${snapshot.data[0]['timesOfWork']['${daysName[index]}'][index2]}',
-                                                                style: TextStyle(
-                                                                fontSize: 20,
-                                                                fontWeight:
-                                                                FontWeight.w600,
-                                                                color: Colors.grey
-                                                                    .withOpacity(0.8),
-                                                                ),
-                                                            ),
-                                                            separatorBuilder: (context, index2) => SizedBox(
-                                                              height:
-                                                              MediaQuery.of(context)
-                                                                  .size
-                                                                  .height *
-                                                                  0.01,
-                                                            ),
-                                                            itemCount: numOfOpeningPerDay,
-                                                    ),
-                                                  ],
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              ListView.separated(
+                                                shrinkWrap: true,
+                                                physics:
+                                                    const NeverScrollableScrollPhysics(),
+                                                padding:
+                                                    const EdgeInsets.all(0.0),
+                                                itemBuilder:
+                                                    (context, index2) => Text(
+                                                  '${snapshot.data[0]['timesOfWork']['${daysName[index]}'][index2]}',
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Colors.grey
+                                                        .withOpacity(0.8),
+                                                  ),
                                                 ),
+                                                separatorBuilder:
+                                                    (context, index2) =>
+                                                        SizedBox(
+                                                  height: MediaQuery.of(context)
+                                                          .size
+                                                          .height *
+                                                      0.01,
+                                                ),
+                                                itemCount: numOfOpeningPerDay,
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -253,43 +260,18 @@ class _FamousePlacesDetailsState extends State<FamousePlacesDetails> {
                           SizedBox(
                             height: MediaQuery.of(context).size.height * 0.02,
                           ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: ElevatedButton.icon(
-                                  icon: Icon(Icons.next_plan,color: Colors.white,),
-                                  style: ElevatedButton.styleFrom(
-                                    fixedSize: const Size(100, 10),
-                                    primary:
-                                        const Color.fromRGBO(249, 168, 38, 1),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30.0),
-                                    ),
-                                  ),
-                                  onPressed: () {},
-                                  label: const Text(
-                                    'Add to plan',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ),
+                          ElevatedButton.icon(
+                            icon: Icon(Icons.map),
+                            style: ElevatedButton.styleFrom(
+                              fixedSize: const Size(100, 10),
+                              primary: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                                side: const BorderSide(width: 1),
                               ),
-                              const SizedBox(width: 40),
-                              Expanded(
-                                child: ElevatedButton.icon(
-                                  icon: Icon(Icons.map),
-                                  style: ElevatedButton.styleFrom(
-                                    fixedSize: const Size(100, 10),
-                                    primary: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30.0),
-                                      side: const BorderSide(width: 1),
-                                    ),
-                                  ),
-                                  onPressed: () {},
-                                  label: const Text('View on map'),
-                                ),
-                              ),
-                            ],
+                            ),
+                            onPressed: () {},
+                            label: const Text('View on map'),
                           ),
                         ],
                       ),

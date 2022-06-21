@@ -12,19 +12,22 @@ class LocationService {
     }
 
 
-  static Future<Position> determinePosition() async {
+  static Future<Position?> determinePosition() async {
     // Test if location services are enabled.
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
       permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          return Future.error('Location permissions are denied');
+          // return Future.error('Location permissions are denied');
+          return null;
         }
       }
       if (permission == LocationPermission.deniedForever) {
-        return Future.error(
-            'Location permissions are permanently denied, we cannot request permissions.');
+        // return Future.error(
+        //     'Location permissions are permanently denied, we cannot request permissions.');
+        print('dasdas');
+        return null;
       }
 
     return await Geolocator.getCurrentPosition(

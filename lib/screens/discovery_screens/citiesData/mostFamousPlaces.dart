@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:untitled2/screens/discovery_screens/citiesData/FamousPlacesDetails.dart';
+import 'package:untitled2/screens/discovery_screens/searchScreen.dart';
 import 'package:untitled2/services/GetData.dart';
 
 class mostFamousePlaces extends StatelessWidget {
@@ -26,10 +27,16 @@ class mostFamousePlaces extends StatelessWidget {
         actions: [
           Padding(
             padding: EdgeInsets.only(
-                right: MediaQuery.of(context).size.width*0.045,
-                top: MediaQuery.of(context).size.height*0.008,
+              right: MediaQuery.of(context).size.width*0.045,
+              top: MediaQuery.of(context).size.height*0.008,
             ),
-            child: IconButton(onPressed: () {}, icon: const Icon(
+            child: IconButton(onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => searchScreen(),
+                  ));
+            }, icon: const Icon(
               Icons.search,
               color: Color.fromRGBO(249, 168, 38, 1),
               size: 40,)),
@@ -45,11 +52,11 @@ class mostFamousePlaces extends StatelessWidget {
                   slivers: <Widget>[
                     SliverList(
                       delegate: SliverChildBuilderDelegate(
-                        (context, index) => Padding(
+                            (context, index) => Padding(
                           padding: EdgeInsets.symmetric(
                             vertical: MediaQuery.of(context).size.height * 0.02,
                             horizontal:
-                                MediaQuery.of(context).size.width * 0.03,
+                            MediaQuery.of(context).size.width * 0.03,
                           ),
                           child: Container(
                             decoration: BoxDecoration(
@@ -85,20 +92,20 @@ class mostFamousePlaces extends StatelessWidget {
                                   child: Padding(
                                     padding: EdgeInsets.symmetric(
                                       horizontal:
-                                          MediaQuery.of(context).size.width *
-                                              0.02,
+                                      MediaQuery.of(context).size.width *
+                                          0.02,
                                     ),
                                     child: Column(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      CrossAxisAlignment.start,
                                       mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
+                                      MainAxisAlignment.spaceEvenly,
                                       children: [
                                         Padding(
                                           padding: EdgeInsets.symmetric(
                                             vertical: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
+                                                .size
+                                                .width *
                                                 0.03,
                                           ),
                                           child: Text(
@@ -122,72 +129,43 @@ class mostFamousePlaces extends StatelessWidget {
                                         Padding(
                                           padding: EdgeInsets.only(
                                             top: MediaQuery.of(context)
-                                                    .size
-                                                    .height *
+                                                .size
+                                                .height *
                                                 0.01,
                                           ),
-                                          child: Row(
-                                            children: [
-                                              Expanded(
-                                                flex: 7,
-                                                child: ElevatedButton(
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                    //primary: Colors.grey,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              30.0),
-                                                    ),
-                                                  ),
-                                                  onPressed: () {
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (context) => FamousePlacesDetails(),
-                                                            settings: RouteSettings(
-                                                              arguments: [
-                                                                snapshot.data[index]['id'],
-                                                                cityId
-                                                              ],
-                                                            )
-                                                        ));
-                                                  },
-                                                  child: const Text(
-                                                    'Read More',
-                                                    style: TextStyle(
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
+                                          child: Container(
+                                            width: double.infinity,
+                                            child: ElevatedButton(
+                                              style:
+                                              ElevatedButton.styleFrom(
+                                                //primary: Colors.grey,
+                                                shape:
+                                                RoundedRectangleBorder(
+                                                  borderRadius:
+                                                  BorderRadius.circular(
+                                                      30.0),
                                                 ),
                                               ),
-                                              SizedBox(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.04,
-                                              ),
-                                              Expanded(
-                                                flex: 5,
-                                                child: ElevatedButton(
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                    primary: Colors.white,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              30.0),
-                                                      side: const BorderSide(
-                                                          width: 1),
-                                                    ),
-                                                  ),
-                                                  onPressed: () {},
-                                                  child: const Text('add'),
+                                              onPressed: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) => FamousePlacesDetails(),
+                                                        settings: RouteSettings(
+                                                          arguments: [
+                                                            snapshot.data[index]['id'],
+                                                            cityId
+                                                          ],
+                                                        )
+                                                    ));
+                                              },
+                                              child: const Text(
+                                                'Read More',
+                                                style: TextStyle(
+                                                  color: Colors.white,
                                                 ),
                                               ),
-                                            ],
+                                            ),
                                           ),
                                         ),
                                       ],
@@ -206,9 +184,9 @@ class mostFamousePlaces extends StatelessWidget {
               } else {
                 return Center(
                     child: Text(
-                  'Sorry, There is no data yet.',
-                  style: TextStyle(fontSize: 20),
-                ));
+                      'Sorry, There is no data yet.',
+                      style: TextStyle(fontSize: 20),
+                    ));
               }
             }
             if (snapshot.hasError) {

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:untitled2/auth/secrets.dart';
 import 'package:untitled2/screens/discovery_screens/citiesData/city_descripton.dart';
 import 'package:untitled2/services/GetData.dart';
 
@@ -85,7 +86,7 @@ class _discovery_screenState extends State<discovery_screen> {
             ),
             child: ClipOval(
               child: CachedNetworkImage(
-                imageUrl: userdata[1],
+                imageUrl: userdata23[2],
                 fit: BoxFit.fill,
                 height: 50,
                 width: 50,

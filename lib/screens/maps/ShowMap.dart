@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
+import 'package:untitled2/auth/secrets.dart';
 import 'package:untitled2/screens/discovery_screens/citiesData/FamousPlacesDetails.dart';
 import 'package:untitled2/screens/discovery_screens/citiesData/city_descripton.dart';
 import 'package:untitled2/screens/maps/DirectionsRepo.dart';
@@ -24,21 +25,19 @@ class _Show_MapsState extends State<Show_Maps> with WidgetsBindingObserver {
   Direction? _info;
   Marker? origin;
   Marker? destination;
-  FloatingSearchBarController fcontroller = FloatingSearchBarController();
+  FloatingSearchBarController fController = FloatingSearchBarController();
   bool showLocationButton = true;
   bool showGetDirection = false;
   bool showCancel = false;
   bool showDistanceAndDuration = false;
   final TextEditingController searchText = TextEditingController();
   var searchResult;
-  static Position? position;
   final Completer<GoogleMapController> _controller = Completer();
   static final CameraPosition _myCameraPosition = CameraPosition(
     target: LatLng(position!.latitude, position!.longitude),
     zoom: 16.4746,
   );
   static CameraPosition? _disCameraPosition;
-  static CameraPosition? _polylineCameraPosition;
   List filterResult = [];
 
   Future<void> getMylastLocation() async {
@@ -76,19 +75,9 @@ class _Show_MapsState extends State<Show_Maps> with WidgetsBindingObserver {
   }
 
   Future<void> polylineCamera() async {
-    // var center = [
-    //   (origin!.position.latitude + destination!.position.latitude)/2,
-    //   (origin!.position.longitude + destination!.position.longitude)/2,
-    // ];
-    // print(center);
-    // _polylineCameraPosition = CameraPosition(
-    //   target: LatLng(center[0], center[1]),
-    //   zoom: 7.4746,
-    // );
     final GoogleMapController controller = await _controller.future;
     controller
         .animateCamera(CameraUpdate.newLatLngBounds(_info!.bounds, 100.0));
-    // .animateCamera(CameraUpdate.newCameraPosition(_polylineCameraPosition!));
   }
 
   @override
@@ -114,7 +103,7 @@ class _Show_MapsState extends State<Show_Maps> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       setState(() {
-        firstEnter = true;
+        // firstEnter = true;
       });
     }
   }
@@ -131,10 +120,6 @@ class _Show_MapsState extends State<Show_Maps> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     var permission = checkPermission();
-    if (!permission && firstEnter) {
-      getMyLocation();
-      firstEnter = false;
-    }
     filterResult = [];
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -208,6 +193,13 @@ class _Show_MapsState extends State<Show_Maps> with WidgetsBindingObserver {
                                       await Geolocator.openLocationSettings();
                                     },
                                     child: const Text('press')),
+                                const Text(
+                                    'After u opened setting, Press refresh'),
+                                ElevatedButton(
+                                    onPressed: () async {
+                                      getMyLocation();
+                                    },
+                                    child: const Text('Refresh')),
                               ],
                             ),
                   buildFloatingSearchBar(),
@@ -339,7 +331,7 @@ class _Show_MapsState extends State<Show_Maps> with WidgetsBindingObserver {
         MediaQuery.of(context).orientation == Orientation.portrait;
 
     return FloatingSearchBar(
-      controller: fcontroller,
+      controller: fController,
       onFocusChanged: (isFocused) {
         if (isFocused) {
           showLocationButton = false;
@@ -497,7 +489,7 @@ class _Show_MapsState extends State<Show_Maps> with WidgetsBindingObserver {
 
                                         goTodisLocation(
                                             filterResult[index]['coordinates']);
-                                        fcontroller.close();
+                                        fController.close();
                                       },
                                     )),
                               ),

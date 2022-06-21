@@ -5,8 +5,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:untitled2/auth/secrets.dart';
 import 'package:untitled2/screens/discovery_screens/discovery_screen.dart';
 import 'package:untitled2/screens/discovery_screens/searchScreen.dart';
+import 'package:untitled2/screens/fixedSuggestionPlans.dart';
+import 'package:untitled2/screens/generatePlanForm.dart';
 import 'package:untitled2/screens/home_layout.dart';
 import 'package:untitled2/screens/maps/ShowMap.dart';
 import 'package:untitled2/services/GetData.dart';
@@ -24,6 +27,9 @@ class imgModel {
   final shortDescription;
   final imgURl;
   final goverName;
+  final cityId;
+  final planId;
+
 
   imgModel({
     this.id,
@@ -31,6 +37,8 @@ class imgModel {
     this.shortDescription,
     this.imgURl,
     this.goverName,
+    this.cityId,
+    this.planId,
   });
 }
 
@@ -39,56 +47,82 @@ List<imgModel> ProgDetails = [
     id: '1',
     imgURl: 'lib/img/home/pexels-photo-3290075.png',
     title: 'Summer in Egypt',
-    shortDescription: '15 differnt places and plans to dicover and visit',
+    shortDescription: '4 different places and plans to discover and visit',
     goverName: 'Cairo',
+    cityId: 'MqtWts6maiQC6D7tQcoI',
+    planId: 'SmMj7gTQJ3xAbbdW1aUv',
   ),
   imgModel(
       id: '2',
       imgURl: 'lib/img/home/popular place luxor.png',
       title: 'Find New Places',
-      shortDescription: '20 Temples to visit, explore and make adventures',
-      goverName: 'Luxor'),
+      shortDescription: '4 Temples to visit, explore and make adventures',
+      goverName: 'Luxor',
+      cityId: 'wsnG3ogBp0QVaOLn1RlV',
+      planId: '4mwZwbResRxbDhSqn9UZ',
+  ),
   imgModel(
       id: '3',
       imgURl: 'lib/img/home/popoular place in giza cairo.png',
       title: 'Summer in Egypt',
-      shortDescription: '15 differnt places and plans to dicover and visit',
-      goverName: 'Giza'),
+      shortDescription: '4 different places and plans to discover and visit',
+      goverName: 'Giza',
+      cityId: 'WBoo3QdcsD2j1mvw8Cfd',
+      planId: 'hcbaU7vHtvlU5uCebW8R',
+  ),
 ];
 
 
 class _home_screenState extends State<home_screen> {
 
   bool isLoading = true; //set loading to false
-
   void startTimer() {
-    Timer.periodic(const Duration(seconds: 2), (t) {
+    Timer.periodic(const Duration(seconds: 2), (t) async {
+      await getUser();
       setState(() {
         isLoading = false; //set loading to false
       });
       t.cancel(); //stops the timer
     });
   }
-  late final Future AuthUser = getUser();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    startTimer();
+  }
   @override
   Widget build(BuildContext context) {
-    //print(userdata);
+    print(userdata);
     return Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          // systemOverlayStyle: isLoading? SystemUiOverlayStyle(
-          //   statusBarIconBrightness: Brightness.dark,
-          //   statusBarColor: Colors.transparent,
-          // ):SystemUiOverlayStyle(
-          //   statusBarIconBrightness: Brightness.light,
-          //   statusBarColor: Colors.transparent,
-          // ),
-        ),
-        body: FutureBuilder(
-          future: AuthUser,
-          builder: (BuildContext context, AsyncSnapshot snapshot){
-            if(snapshot.hasData){
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        // systemOverlayStyle: isLoading? SystemUiOverlayStyle(
+        //   statusBarIconBrightness: Brightness.dark,
+        //   statusBarColor: Colors.transparent,
+        // ):SystemUiOverlayStyle(
+        //   statusBarIconBrightness: Brightness.light,
+        //   statusBarColor: Colors.transparent,
+        // ),
+      ),
+      body: isLoading ? Center(child: CircularProgressIndicator(),):StreamBuilder<Object>(
+          stream: FirebaseFirestore.instance.collection("users").doc(userid).snapshots(),
+          builder: (context, AsyncSnapshot snapshot) {
+            if(snapshot.hasData) {
+              userdata23 = [];
+              userdata23.addAll(
+                  {
+                    snapshot.data['firstName'],
+                    snapshot.data['lastName'],
+                    snapshot.data['photourl'],
+                    snapshot.data['Email'],
+                    userid,
+
+                  }
+              );
+              print(userdata23);
               return Column(
                 children: [
                   Stack(
@@ -96,20 +130,27 @@ class _home_screenState extends State<home_screen> {
                     children: [
                       Container(
                         width: double.infinity,
-                        height: MediaQuery.of(context).size.height * 0.35,
+                        height: MediaQuery
+                            .of(context)
+                            .size
+                            .height * 0.35,
                         decoration: BoxDecoration(
                           image: DecorationImage(
                             image: const AssetImage(
                                 'lib/img/home/homepage background.png'),
                             fit: BoxFit.fill,
                             colorFilter: ColorFilter.mode(
-                                Colors.black.withOpacity(0.5), BlendMode.darken),
+                                Colors.black.withOpacity(0.5),
+                                BlendMode.darken),
                           ),
                         ),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
-                          top: MediaQuery.of(context).size.height * 0.1,
+                          top: MediaQuery
+                              .of(context)
+                              .size
+                              .height * 0.1,
                           left: 20,
                           right: 20,
                         ),
@@ -117,10 +158,11 @@ class _home_screenState extends State<home_screen> {
                           children: [
                             Expanded(
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment
+                                    .start,
                                 children: [
                                   Text(
-                                    'Hi, ${snapshot.data[0]}',
+                                    'Hi, ${snapshot.data['firstName']}',
                                     style: const TextStyle(
                                       fontSize: 30,
                                       fontWeight: FontWeight.bold,
@@ -129,10 +171,14 @@ class _home_screenState extends State<home_screen> {
                                   ),
                                   SizedBox(
                                     height:
-                                    MediaQuery.of(context).size.height * 0.01,
+                                    MediaQuery
+                                        .of(context)
+                                        .size
+                                        .height * 0.01,
                                   ),
                                   Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment
+                                        .start,
                                     children: [
                                       const Icon(
                                         Icons.location_on,
@@ -151,8 +197,10 @@ class _home_screenState extends State<home_screen> {
                                         height: 20,
                                         child: TextButton(
                                             style: TextButton.styleFrom(
-                                              padding: const EdgeInsets.all(0.0),
-                                              alignment: Alignment.topLeft,
+                                              padding: const EdgeInsets
+                                                  .all(0.0),
+                                              alignment: Alignment
+                                                  .topLeft,
                                               primary: Colors.transparent,
                                             ),
                                             onPressed: () {},
@@ -160,7 +208,8 @@ class _home_screenState extends State<home_screen> {
                                               'Egypt',
                                               style: const TextStyle(
                                                 fontSize: 13,
-                                                fontWeight: FontWeight.bold,
+                                                fontWeight: FontWeight
+                                                    .bold,
                                                 color: Colors.white,
                                                 decoration:
                                                 TextDecoration.underline,
@@ -174,13 +223,17 @@ class _home_screenState extends State<home_screen> {
                               ),
                             ),
                             ClipOval(
-                              child: CachedNetworkImage(imageUrl:snapshot.data[1],fit: BoxFit.fill,height: 60,width: 60,),
+                              child: CachedNetworkImage(
+                                imageUrl: snapshot.data['photourl'],
+                                fit: BoxFit.fill,
+                                height: 60,
+                                width: 60,),
                             ),
                           ],
                         ),
                       ),
                       GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -191,7 +244,10 @@ class _home_screenState extends State<home_screen> {
                           padding: EdgeInsets.only(
                             left: 30.0,
                             right: 30.0,
-                            top: MediaQuery.of(context).size.height * 0.24,
+                            top: MediaQuery
+                                .of(context)
+                                .size
+                                .height * 0.24,
                           ),
                           child: Container(
                             height: 55,
@@ -206,26 +262,34 @@ class _home_screenState extends State<home_screen> {
                                   spreadRadius: 5,
                                   blurRadius: 7,
                                   offset:
-                                  const Offset(1, 3), // changes position of shadow
+                                  const Offset(
+                                      1, 3), // changes position of shadow
                                 ),
                               ],
                             ),
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 15.0),
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.search,color: const Color.fromRGBO(249, 168, 38, 1)),
-                                    SizedBox(
-                                      width: MediaQuery.of(context).size.width*0.02,
-                                    ),
-                                    const Text('Where do you want to go?',style: TextStyle(
-                                      color: Color.fromRGBO(249, 168, 38, 1),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 15.0),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.search,
+                                      color: const Color.fromRGBO(
+                                          249, 168, 38, 1)),
+                                  SizedBox(
+                                    width: MediaQuery
+                                        .of(context)
+                                        .size
+                                        .width * 0.02,
+                                  ),
+                                  const Text('Where do you want to go?',
+                                    style: TextStyle(
+                                      color: Color.fromRGBO(
+                                          249, 168, 38, 1),
                                       fontWeight: FontWeight.bold,
                                       fontSize: 18,
                                     ),)
-                                  ],
-                                ),
+                                ],
                               ),
+                            ),
                           ),
                         ),
                       ),
@@ -234,18 +298,25 @@ class _home_screenState extends State<home_screen> {
                   Expanded(
                     child: Padding(
                       padding: EdgeInsets.symmetric(
-                        horizontal: MediaQuery.of(context).size.width * 0.04,
+                        horizontal: MediaQuery
+                            .of(context)
+                            .size
+                            .width * 0.04,
                       ),
                       child: CustomScrollView(
                         slivers: <Widget>[
                           SliverToBoxAdapter(
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment
+                                  .start,
                               children: [
                                 Padding(
                                   padding: EdgeInsets.only(
                                     top:
-                                    MediaQuery.of(context).size.height * 0.02,
+                                    MediaQuery
+                                        .of(context)
+                                        .size
+                                        .height * 0.02,
                                     bottom: 15.0,
                                     left: 2,
                                   ),
@@ -260,7 +331,10 @@ class _home_screenState extends State<home_screen> {
                                 Padding(
                                   padding: EdgeInsets.symmetric(
                                     horizontal:
-                                    MediaQuery.of(context).size.width * 0.07,
+                                    MediaQuery
+                                        .of(context)
+                                        .size
+                                        .width * 0.07,
                                   ),
                                   child: Row(
                                     children: [
@@ -271,18 +345,21 @@ class _home_screenState extends State<home_screen> {
                                             Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
-                                                  builder: (context) => discovery_screen(),
+                                                  builder: (context) =>
+                                                      discovery_screen(),
                                                 ));
                                           },
                                           icon: const Icon(
                                             Icons.add_location_outlined,
                                             size: 24.0,
                                           ),
-                                          label: Text('Discovery'.toUpperCase()),
+                                          label: Text(
+                                              'Discovery'.toUpperCase()),
                                           style: ElevatedButton.styleFrom(
                                             primary: Colors.white,
                                             onPrimary:
-                                            const Color.fromRGBO(249, 168, 38, 1),
+                                            const Color.fromRGBO(
+                                                249, 168, 38, 1),
                                             //shadowColor: Color.fromRGBO(249, 0, 38, 1),
                                             elevation: 10,
                                           ),
@@ -301,21 +378,22 @@ class _home_screenState extends State<home_screen> {
                                             //       builder: (context) => Show_Maps(),
                                             //     ));
 
-                                            final BottomNavigationBar navigationBar = globalKey.currentWidget! as BottomNavigationBar;
+                                            final BottomNavigationBar navigationBar = globalKey
+                                                .currentWidget! as BottomNavigationBar;
                                             print(navigationBar);
                                             navigationBar.onTap!(2);
-
-
                                           },
                                           icon: const Icon(
                                             Icons.map,
                                             size: 24.0,
                                           ),
-                                          label: Text('MAp'.toUpperCase()),
+                                          label: Text(
+                                              'MAp'.toUpperCase()),
                                           style: ElevatedButton.styleFrom(
                                             primary: Colors.white,
                                             onPrimary:
-                                            const Color.fromRGBO(249, 168, 38, 1),
+                                            const Color.fromRGBO(
+                                                249, 168, 38, 1),
                                             //shadowColor: Color.fromRGBO(249, 0, 38, 1),
                                             elevation: 10,
                                           ),
@@ -327,16 +405,29 @@ class _home_screenState extends State<home_screen> {
                                 Padding(
                                   padding: EdgeInsets.symmetric(
                                     horizontal:
-                                    MediaQuery.of(context).size.width * 0.07,
+                                    MediaQuery
+                                        .of(context)
+                                        .size
+                                        .width * 0.07,
                                     vertical:
-                                    MediaQuery.of(context).size.height * 0.01,
+                                    MediaQuery
+                                        .of(context)
+                                        .size
+                                        .height * 0.01,
                                   ),
                                   child: SizedBox(
                                     width: double.infinity,
                                     //height: 40,
                                     child: ElevatedButton(
                                       // <-- ElevatedButton
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  generatePlanForm(),
+                                            ));
+                                      },
                                       child: Text(
                                         'Generate plan'.toUpperCase(),
                                         style: const TextStyle(
@@ -346,7 +437,8 @@ class _home_screenState extends State<home_screen> {
                                         ),
                                       ),
                                       style: ElevatedButton.styleFrom(
-                                        primary: const Color.fromRGBO(249, 168, 38, 1),
+                                        primary: const Color.fromRGBO(
+                                            249, 168, 38, 1),
                                         elevation: 5,
                                       ),
                                     ),
@@ -355,7 +447,10 @@ class _home_screenState extends State<home_screen> {
                                 Padding(
                                   padding: EdgeInsets.only(
                                     bottom:
-                                    MediaQuery.of(context).size.height * 0.01,
+                                    MediaQuery
+                                        .of(context)
+                                        .size
+                                        .height * 0.01,
                                     left: 2,
                                   ),
                                   child: Row(
@@ -391,7 +486,8 @@ class _home_screenState extends State<home_screen> {
                             ),
                             delegate: SliverChildBuilderDelegate(
                                   (context, index) =>
-                                  buildProgItem(context, ProgDetails[index]),
+                                  buildProgItem(
+                                      context, ProgDetails[index]),
                               childCount: ProgDetails.length,
                             ),
                           ),
@@ -402,88 +498,110 @@ class _home_screenState extends State<home_screen> {
                 ],
               );
             }
-            if(snapshot.hasError){
-              return const Text('Please check your connection and try again');
-            }
-            return const Center(child: CircularProgressIndicator());
-          },
-        ),
-      );
+            return Center(child: CircularProgressIndicator(),);
+          }
+      ),
+    );
   }
 
   // 1. build item
   Widget buildProgItem(BuildContext context, imgModel ProgDetails) => Stack(
-        children: [
-          Container(
-            width: 200,
-            height: 244,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(
-                5.0,
-              ),
-              image: DecorationImage(
-                image: AssetImage('${ProgDetails.imgURl}'),
-                fit: BoxFit.cover,
-                colorFilter: ColorFilter.mode(
-                    Colors.black.withOpacity(0.2), BlendMode.darken),
+    children: [
+      Container(
+        width: 200,
+        height: 244,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(
+            5.0,
+          ),
+          image: DecorationImage(
+            image: AssetImage('${ProgDetails.imgURl}'),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+                Colors.black.withOpacity(0.2), BlendMode.darken),
+          ),
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Text(
+              '${ProgDetails.title}',
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.end,
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.005,
+            ),
+            Text(
+              '${ProgDetails.shortDescription}',
+              style: const TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.005,
+            ),
+            Row(
               children: [
-                Text(
-                  '${ProgDetails.title}',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.005,
+                const Icon(
+                  Icons.location_on,
+                  color: Colors.white,
+                  size: 18,
                 ),
                 Text(
-                  '${ProgDetails.shortDescription}',
+                  '${ProgDetails.goverName}',
                   style: const TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
                 ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.005,
-                ),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.location_on,
-                      color: Colors.white,
-                      size: 18,
-                    ),
-                    Text(
-                      '${ProgDetails.goverName}',
-                      style: const TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
               ],
             ),
-          ),
-          const Icon(
-            Icons.bookmark,
-            color: Color.fromRGBO(249, 168, 38, 1),
-            size: 30,
-          ),
-        ],
-      );
+          ],
+        ),
+      ),
+      const Icon(
+        Icons.bookmark,
+        color: Color.fromRGBO(249, 168, 38, 1),
+        size: 30,
+      ),
+      SizedBox.expand(
+        child: Material(
+            type: MaterialType.transparency,
+            child: InkWell(onTap: () async {
+              var data = await showPlanDetails(ProgDetails.cityId, ProgDetails.planId);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => fixedSuggestionPlans(planDetail: data[0]),
+                  )
+              );
+
+
+              // Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //       builder: (context) => const cityPlans(),
+              //       settings: RouteSettings(
+              //         arguments: [snapshot.data[0]['id'],snapshot.data[0]['name']],
+              //       ),
+              //     )
+              // );
+            },)
+        ),
+      ),
+    ],
+  );
 
 //Widget buildChatItem() => Padding(
 //         padding: const EdgeInsets.all(1.0),

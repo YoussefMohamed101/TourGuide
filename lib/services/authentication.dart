@@ -8,7 +8,7 @@ abstract class BaseAuth {
   Future<bool> signIn(String email, String password);
 
   Future<bool> signUp(
-      String email, String password, String Name, var filename , var imageTemporary);
+      String email, String password, String firstName,String lastName, var filename , var imageTemporary);
 
   Future<User?> getCurrentUser();
 
@@ -47,14 +47,14 @@ class Auth implements BaseAuth {
   }
 
   Future<bool> signUp(
-      String email, String password, String Name, var filename , var imageTemporary) async {
+      String email, String password, String firstName, String lastName, var filename , var imageTemporary) async {
     var imageurl;
     var id;
       try {
         final authResult = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: email, password: password)
             .then((result) {
-          result.user!.updateDisplayName(Name);
+          result.user!.updateDisplayName(firstName);
           id = result.user?.uid;
         });
         if (filename != null){
@@ -76,7 +76,8 @@ class Auth implements BaseAuth {
 
         await FirebaseFirestore.instance.collection("users").doc(id).set(
             {
-              "username": Name,
+              "firstName": firstName,
+              "lastName": lastName,
               "Email": email,
               "photourl": imageurl,
             });
@@ -115,24 +116,4 @@ class Auth implements BaseAuth {
     return authResult?.emailVerified;
   }
 
-  void _showAlertDialog(String message) async {
-    buildPostFooter(BuildContext context) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text(message),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Ok'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
-  }
 }

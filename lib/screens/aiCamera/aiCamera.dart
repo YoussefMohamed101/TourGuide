@@ -34,7 +34,7 @@ class _AiCameraState extends State<AiCamera> {
   }
 
   getDataOfStatue(statueName) async {
-    if (statueName != null) {
+    if (statueName != 'null') {
       var connection = FirebaseFirestore.instance.collection('Statues');
       await connection
           .where('name', isEqualTo: '$statueName')
@@ -263,8 +263,20 @@ class _AiCameraState extends State<AiCamera> {
       imageStd: 127.5,
     );
 
-    _outputs = output!;
-    getDataOfStatue(_outputs![0]["label"]);
+    print(output);
+    if(output!.isEmpty){
+      _outputs = null;
+      setState(() {
+        _loading = false;
+      });
+    }
+    else{
+      print('555555555555555555555555555555555555555555555555555555555');
+      _outputs = output;
+      getDataOfStatue(_outputs![0]["label"]);
+    }
+
+
   }
 
   loadModel() async {

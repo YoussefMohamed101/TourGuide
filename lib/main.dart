@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:untitled2/screens/home_layout.dart';
 import 'package:untitled2/screens/signinAndSignup/Register.dart';
-
 bool isLogin = true;
 
 Future<void> main() async {
