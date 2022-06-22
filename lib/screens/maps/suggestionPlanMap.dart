@@ -70,7 +70,7 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
   List limitCityNPlacesDetails = [];
   int activeStep = 0;
   double _containerHeight = 255.0;
-  int _itemsCount = 3;
+  int _itemsCount1 = 3;
   int hour = 7;
   List totalDistance = [];
   List totalDuration = [];
@@ -255,143 +255,43 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
       );
     }
 
+    totalDistance.add(
+      0,
+    );
+    totalDuration.add(
+      0,
+    );
+
+
 
     designedData = [];
-    if(limitCityNPlacesDetails.length % 2 ==0){
-      for (int i = 0; i< limitCityNPlacesDetails.length; i+=2){
-        designedData.add({
-          'places': {
-            'ids': [
-              limitCityNPlacesDetails[i]['id'],
-              limitCityNPlacesDetails[i+1]['id'],
-            ],
-            'duration': {
-              'text': [
-                limitCityNPlacesDetails[i]['durationText'],
-                limitCityNPlacesDetails[i+1]['durationText'],
-              ],
-              'value': [
-                limitCityNPlacesDetails[i]['durationValue'],
-                limitCityNPlacesDetails[i+1]['durationValue'],
-              ],
-            },
-            'distance': {
-              'text': [
-                limitCityNPlacesDetails[i]['distanceText'],
-                limitCityNPlacesDetails[i+1]['distanceText'],
-              ],
-              'value': [
-                limitCityNPlacesDetails[i]['distanceValue'],
-                limitCityNPlacesDetails[i+1]['distanceValue'],
-              ],
-            },
-            'Place 1': {
-              'id' : limitCityNPlacesDetails[i]['id'],
-              'img' : limitCityNPlacesDetails[i]['img'],
-              'name' : limitCityNPlacesDetails[i]['name'],
-              // 'information' : limitCityNPlacesDetails[i]['information'],
-              'coordinates' : limitCityNPlacesDetails[i]['coordinates'],
-            },
-            'Place 2': {
-              'id' : limitCityNPlacesDetails[i+1]['id'],
-              'img' : limitCityNPlacesDetails[i+1]['img'],
-              'name' : limitCityNPlacesDetails[i+1]['name'],
-              // 'information' : limitCityNPlacesDetails[i+1]['information'],
-              'coordinates' : limitCityNPlacesDetails[i+1]['coordinates'],
-            },
-            'duration 1' : '${totalDuration[i]}',
-            'distance 1' : '${totalDistance[i]}',
-          },
-          'coordinates': [30.00935956528337, 31.199082360667852],
-          'id': limitCityNPlacesDetails[0]['cityID'],
-        });
-      }
-    }
-    else if(limitCityNPlacesDetails.length % 3 ==0){
-      for (int i = 0; i< limitCityNPlacesDetails.length; i+=3){
-        designedData.add({
-          'places': {
-            'Place 1': {
-              'id' : limitCityNPlacesDetails[i]['id'],
-              'img' : limitCityNPlacesDetails[i]['img'],
-              'name' : limitCityNPlacesDetails[i]['name'],
-              // 'information' : limitCityNPlacesDetails[i]['information'],
-              'coordinates' : limitCityNPlacesDetails[i]['coordinates'],
-            },
-            'Place 2': {
-              'id' : limitCityNPlacesDetails[i+1]['id'],
-              'img' : limitCityNPlacesDetails[i+1]['img'],
-              'name' : limitCityNPlacesDetails[i+1]['name'],
-              // 'information' : limitCityNPlacesDetails[i+1]['information'],
-              'coordinates' : limitCityNPlacesDetails[i+1]['coordinates'],
-            },
-            'Place 3': {
-              'id' : limitCityNPlacesDetails[i+2]['id'],
-              'img' : limitCityNPlacesDetails[i+2]['img'],
-              'name' : limitCityNPlacesDetails[i+2]['name'],
-              // 'information' : limitCityNPlacesDetails[i+2]['information'],
-              'coordinates' : limitCityNPlacesDetails[i+2]['coordinates'],
-            },
-            'duration 1' : '${totalDuration[i]}',
-            'duration 2' : '${totalDuration[i+1]}',
-            'distance 1' : '${totalDistance[i]}',
-            'distance 2' : '${totalDistance[i+1]}',
-          },
-          'coordinates': [30.00935956528337, 31.199082360667852],
-          'id': limitCityNPlacesDetails[0]['cityID'],
-        });
-      }
-    }
-    else{
-      for (int i = 0; i< limitCityNPlacesDetails.length; i+=1){
-        designedData.add({
-          'duration': {
-            'text': [
-              limitCityNPlacesDetails[i]['durationText'],
-            ],
-            'value': [
-              limitCityNPlacesDetails[i]['durationValue'],
-            ],
-          },
-          'distance': {
-            'text': [
-              limitCityNPlacesDetails[i]['distanceText'],
-            ],
-            'value': [
-              limitCityNPlacesDetails[i]['distanceValue'],
-            ],
-          },
-          'Place 1': {
-            'id' : limitCityNPlacesDetails[i]['id'],
-            'img' : limitCityNPlacesDetails[i]['img'],
-            'name' : limitCityNPlacesDetails[i]['name'],
-            // 'information' : limitCityNPlacesDetails[i]['information'],
-            'coordinates' : limitCityNPlacesDetails[i]['coordinates'],
-          },
-          'coordinates': [30.00935956528337, 31.199082360667852],
-          'id': limitCityNPlacesDetails[0]['cityID'],
-        });
-      }
+    for (int i = 0; i< limitCityNPlacesDetails.length; i+=1){
+      designedData.add({
+        'duration': '${totalDuration[i]}',
+        'distance': '${totalDistance[i]}',
+        'Place 1': {
+          'id' : limitCityNPlacesDetails[i]['id'],
+          'img' : limitCityNPlacesDetails[i]['img'],
+          'name' : limitCityNPlacesDetails[i]['name'],
+          'information' : limitCityNPlacesDetails[i]['information'],
+          'coordinates' : limitCityNPlacesDetails[i]['coordinates'],
+        },
+        'coordinates': [30.00935956528337, 31.199082360667852],
+        'id': limitCityNPlacesDetails[0]['cityID'],
+      });
     }
 
   }
 
   Future<void> sortdata(var designedData) async {
-    List designedDataV2 = [];
-    //
-    // list.add([1.2]);
-    // list.add(1);
-    // print(list);
-    var j = 0;
-    var z = 0;
-    for(int i = 0 ; i< 2; i ++){
-      designedDataV2.add([i]);
-      designedDataV2[i].add([designedData[i]]);
-    }
-    //designedDataV2.add([designedData[3]]);
-    log(designedDataV2.toString());
-    // log(designedData[0].toString());
+    //log(totalDistance.toString());
+    log(totalDistance.toString());
 
+    // for(int i =0;i<designedData.length;i++) {
+    //
+    //   log(designedData[i]['Place 1']['coordinates'].toString());
+    //   log(designedData[i]['distance']['text'][0].toString());
+    // }
   }
 
   Future<void> polylineCamera() async {
@@ -559,7 +459,8 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
   }
 
   Widget PlanDetails() {
-    _itemsCount = limitCityNPlacesDetails.length~/designedData.length;
+    // _itemsCount = limitCityNPlacesDetails.length~/designedData.length;
+    _itemsCount1 = 3;
     hour = 6;
     return Container(
       decoration: BoxDecoration(
@@ -590,203 +491,199 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
                   height: 5,
                 ),
               ),
-              ListView.separated(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index2) => Column(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  designedData.length > 3?
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 20.0,
+                        top: 10
+                    ),
+                    child: Text(
+                      'Day 1',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 35,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ):Container(),
+                  Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      designedData.length > 1?
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 20.0,
-                            top: 10
+                      SizedBox(
+                        height: designedData.length < 3? designedData.length * (_containerHeight + designedData.length + 80):_itemsCount1 * (_containerHeight + _itemsCount1 + 80),
+                        child: ImageStepper(
+                          lineColor: Colors.white,
+                          lineLength: 310,
+                          lineDotRadius: 3,
+                          enableNextPreviousButtons: false,
+                          steppingEnabled: false,
+                          stepReachedAnimationEffect: Curves.ease,
+                          scrollingDisabled: true,
+                          images: designedData.length < 3? numberOfSteps(0,designedData.length):numberOfSteps(0,_itemsCount1),
+                          //activeStep property set to activeStep variable defined above.
+                          activeStep: activeStep,
+                          // This ensures step-tapping updates the activeStep.
+                          onStepReached: (index) {
+                            setState(() {
+                              activeStep = index;
+                            });
+                          },
+                          direction: Axis.vertical,
                         ),
-                        child: Text(
-                          'Day ${index2+1}',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 35,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ):Container(),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: _itemsCount * (_containerHeight + _itemsCount + 80),
-                            child: ImageStepper(
-                              lineColor: Colors.white,
-                              lineLength: 310,
-                              lineDotRadius: 3,
-                              enableNextPreviousButtons: false,
-                              steppingEnabled: false,
-                              stepReachedAnimationEffect: Curves.ease,
-                              scrollingDisabled: true,
-                              images: numberOfSteps(index2),
-                              //activeStep property set to activeStep variable defined above.
-                              activeStep: activeStep,
-                              // This ensures step-tapping updates the activeStep.
-                              onStepReached: (index) {
-                                setState(() {
-                                  activeStep = index;
-                                });
-                              },
-                              direction: Axis.vertical,
-                            ),
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 40.0),
-                              child: ListView.separated(
-                                physics: NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                itemBuilder: (context, index) {
-                                  hour += 2;
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 40.0),
+                          child: ListView.separated(
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              hour += 2;
 
-                                  return Container(
-                                    width: double.infinity,
-                                    height: _containerHeight,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: Colors.white,
-                                    ),
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(horizontal: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            hour > 12
-                                                ? '${hour - 12}:00 PM -- ${designedData[index2]['Place ${index +1}']['name']}'
-                                                : '${hour}:00 AM -- ${designedData[index2]['Place ${index + 1 }']['name']}',
+                              return Container(
+                                width: double.infinity,
+                                height: _containerHeight,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors.white,
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 15),
+                                  child: Column(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        hour > 12
+                                            ? '${hour - 12}:00 PM -- ${designedData[index]['Place 1']['name']}'
+                                            : '${hour}:00 AM -- ${designedData[index]['Place 1']['name']}',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        'Visit Duration: 2 hour',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        '${designedData[index]['Place 1']['information']}',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                        ),
+                                        maxLines: 3,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Container(
+                                        height: 1,
+                                        color: Colors.black,
+                                      ),
+                                      Container(
+                                        width: double.infinity,
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                  const FamousePlacesDetails(),
+                                                  settings:
+                                                  RouteSettings(arguments: [
+                                                    limitCityNPlacesDetails[index]
+                                                    ['id'],
+                                                    cityNPlacesDetails[0]['city'][0]
+                                                    ['id'],
+                                                  ]),
+                                                ));
+                                          },
+                                          child: Text('Read more'),
+                                          style: ElevatedButton.styleFrom(
+                                            onPrimary: Colors.white,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                              BorderRadius.circular(20.0),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                            separatorBuilder: (context, index) => Container(
+                              height: MediaQuery.of(context).size.height * 0.12,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    height: 20,
+                                    width: 2,
+                                    color: Colors.white,
+                                  ),
+                                  // Container(
+                                  //   height: 2,
+                                  //   width: 200,
+                                  //   color: Colors.white,
+                                  // ),
+
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.directions_car_rounded,
+                                          color: Colors.white,
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            'After ${designedData[index]['distance']},${designedData[index]['duration']}',
                                             style: TextStyle(
-                                              fontSize: 18,
+                                              fontSize: 16,
+                                              color: Colors.white,
                                               fontWeight: FontWeight.bold,
                                             ),
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
                                           ),
-                                          Text(
-                                            'Visit Duration: 2 hour',
-                                            style: TextStyle(
-                                              fontSize: 15,
-                                            ),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          // Text(
-                                          //   '${designedData[index2]['places']['Place ${index +1}']['information']}',
-                                          //   style: TextStyle(
-                                          //     fontSize: 15,
-                                          //   ),
-                                          //   maxLines: 3,
-                                          //   overflow: TextOverflow.ellipsis,
-                                          // ),
-                                          Container(
-                                            height: 1,
-                                            color: Colors.black,
-                                          ),
-                                          Container(
-                                            width: double.infinity,
-                                            child: ElevatedButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                      const FamousePlacesDetails(),
-                                                      settings:
-                                                      RouteSettings(arguments: [
-                                                        limitCityNPlacesDetails[index]
-                                                        ['id'],
-                                                        cityNPlacesDetails[0]['city'][0]
-                                                        ['id'],
-                                                      ]),
-                                                    ));
-                                              },
-                                              child: Text('Read more'),
-                                              style: ElevatedButton.styleFrom(
-                                                onPrimary: Colors.white,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                  BorderRadius.circular(20.0),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                },
-                                separatorBuilder: (context, index) => Container(
-                                  height: MediaQuery.of(context).size.height * 0.12,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        height: 20,
-                                        width: 2,
-                                        color: Colors.white,
-                                      ),
-                                      // Container(
-                                      //   height: 2,
-                                      //   width: 200,
-                                      //   color: Colors.white,
-                                      // ),
-
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.directions_car_rounded,
-                                              color: Colors.white,
-                                            ),
-                                            SizedBox(
-                                              width: 5,
-                                            ),
-                                            Expanded(
-                                              child: Text(
-                                                'After ${designedData[index2]['places']['distance ${index + 1}']},${designedData[index2]['places']['duration ${index + 1}']}',
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                maxLines: 2,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                          ],
                                         ),
-                                      ),
-                                      // Container(
-                                      //   height: 2,
-                                      //   width: 200,
-                                      //   color: Colors.white,
-                                      // ),
-                                      Container(
-                                        height: 20,
-                                        width: 2,
-                                        color: Colors.white,
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                itemCount: _itemsCount,
+                                  // Container(
+                                  //   height: 2,
+                                  //   width: 200,
+                                  //   color: Colors.white,
+                                  // ),
+                                  Container(
+                                    height: 20,
+                                    width: 2,
+                                    color: Colors.white,
+                                  ),
+                                ],
                               ),
                             ),
+                            itemCount: designedData.length < 3? designedData.length:_itemsCount1,
                           ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
-                  separatorBuilder: (context, index2) => Padding(
+                  designedData.length > 3?
+                  Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: Column(
                       children: [
@@ -799,8 +696,403 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
                         SizedBox(height: 15,),
                       ],
                     ),
-                  ),
-                  itemCount: designedData.length),
+                  ):Container(),
+                  designedData.length > 3?
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 20.0,
+                        top: 10
+                    ),
+                    child: Text(
+                      'Day 2',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 35,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ):Container(),
+                  designedData.length > 3?
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: designedData.length > 6? (_itemsCount1) * (_containerHeight + (_itemsCount1) + 80)
+                        :(designedData.length - _itemsCount1) * (_containerHeight + (designedData.length - _itemsCount1) + 80),
+                        child: ImageStepper(
+                          lineColor: Colors.white,
+                          lineLength: 310,
+                          lineDotRadius: 3,
+                          enableNextPreviousButtons: false,
+                          steppingEnabled: false,
+                          stepReachedAnimationEffect: Curves.ease,
+                          scrollingDisabled: true,
+                          images: designedData.length > 6? numberOfSteps(3,_itemsCount1*2) : numberOfSteps(3,designedData.length),
+                          //activeStep property set to activeStep variable defined above.
+                          activeStep: activeStep,
+                          // This ensures step-tapping updates the activeStep.
+                          onStepReached: (index) {
+                            setState(() {
+                              activeStep = index;
+                            });
+                          },
+                          direction: Axis.vertical,
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 40.0),
+                          child: ListView.separated(
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              hour += 2;
+
+                              return Container(
+                                width: double.infinity,
+                                height: _containerHeight,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors.white,
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 15),
+                                  child: Column(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        hour > 12
+                                            ? '${hour - 12}:00 PM -- ${designedData[index+3]['Place 1']['name']}'
+                                            : '${hour}:00 AM -- ${designedData[index+3]['Place 1']['name']}',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        'Visit Duration: 2 hour',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        '${designedData[index]['Place 1']['information']}',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                        ),
+                                        maxLines: 3,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Container(
+                                        height: 1,
+                                        color: Colors.black,
+                                      ),
+                                      Container(
+                                        width: double.infinity,
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                  const FamousePlacesDetails(),
+                                                  settings:
+                                                  RouteSettings(arguments: [
+                                                    limitCityNPlacesDetails[index+3]
+                                                    ['id'],
+                                                    cityNPlacesDetails[0]['city'][0]
+                                                    ['id'],
+                                                  ]),
+                                                ));
+                                          },
+                                          child: Text('Read more'),
+                                          style: ElevatedButton.styleFrom(
+                                            onPrimary: Colors.white,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                              BorderRadius.circular(20.0),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                            separatorBuilder: (context, index) => Container(
+                              height: MediaQuery.of(context).size.height * 0.12,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    height: 20,
+                                    width: 2,
+                                    color: Colors.white,
+                                  ),
+                                  // Container(
+                                  //   height: 2,
+                                  //   width: 200,
+                                  //   color: Colors.white,
+                                  // ),
+
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.directions_car_rounded,
+                                          color: Colors.white,
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            'After ${designedData[index+3]['distance']},${designedData[index+3]['duration']}',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  // Container(
+                                  //   height: 2,
+                                  //   width: 200,
+                                  //   color: Colors.white,
+                                  // ),
+                                  Container(
+                                    height: 20,
+                                    width: 2,
+                                    color: Colors.white,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            itemCount: designedData.length > 6? _itemsCount1 : designedData.length - _itemsCount1,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ):Container(),
+                  designedData.length > 6?
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Column(
+                      children: [
+                        SizedBox(height: 15,),
+                        Container(
+                          color: Colors.white,
+                          height: 3,
+                          width: double.infinity,
+                        ),
+                        SizedBox(height: 15,),
+                      ],
+                    ),
+                  ):Container(),
+                  designedData.length > 6?
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 20.0,
+                        top: 10
+                    ),
+                    child: Text(
+                      'Day 3',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 35,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ):Container(),
+                  designedData.length > 6?
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: (designedData.length - _itemsCount1*2) * (_containerHeight + (designedData.length - _itemsCount1*2) + 80),
+                        child: ImageStepper(
+                          lineColor: Colors.white,
+                          lineLength: 310,
+                          lineDotRadius: 3,
+                          enableNextPreviousButtons: false,
+                          steppingEnabled: false,
+                          stepReachedAnimationEffect: Curves.ease,
+                          scrollingDisabled: true,
+                          images: numberOfSteps(6,designedData.length),
+                          //activeStep property set to activeStep variable defined above.
+                          activeStep: activeStep,
+                          // This ensures step-tapping updates the activeStep.
+                          onStepReached: (index) {
+                            setState(() {
+                              activeStep = index;
+                            });
+                          },
+                          direction: Axis.vertical,
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 40.0),
+                          child: ListView.separated(
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              hour += 2;
+
+                              return Container(
+                                width: double.infinity,
+                                height: _containerHeight,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors.white,
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 15),
+                                  child: Column(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        hour > 12
+                                            ? '${hour - 12}:00 PM -- ${designedData[index+6]['Place 1']['name']}'
+                                            : '${hour}:00 AM -- ${designedData[index+6]['Place 1']['name']}',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        'Visit Duration: 2 hour',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        '${designedData[index]['Place 1']['information']}',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                        ),
+                                        maxLines: 3,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Container(
+                                        height: 1,
+                                        color: Colors.black,
+                                      ),
+                                      Container(
+                                        width: double.infinity,
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                  const FamousePlacesDetails(),
+                                                  settings:
+                                                  RouteSettings(arguments: [
+                                                    limitCityNPlacesDetails[index+6]
+                                                    ['id'],
+                                                    cityNPlacesDetails[0]['city'][0]
+                                                    ['id'],
+                                                  ]),
+                                                ));
+                                          },
+                                          child: Text('Read more'),
+                                          style: ElevatedButton.styleFrom(
+                                            onPrimary: Colors.white,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                              BorderRadius.circular(20.0),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                            separatorBuilder: (context, index) => Container(
+                              height: MediaQuery.of(context).size.height * 0.12,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    height: 20,
+                                    width: 2,
+                                    color: Colors.white,
+                                  ),
+                                  // Container(
+                                  //   height: 2,
+                                  //   width: 200,
+                                  //   color: Colors.white,
+                                  // ),
+
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.directions_car_rounded,
+                                          color: Colors.white,
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            'After ${designedData[index+6]['distance']},${designedData[index+6]['duration']}',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  // Container(
+                                  //   height: 2,
+                                  //   width: 200,
+                                  //   color: Colors.white,
+                                  // ),
+                                  Container(
+                                    height: 20,
+                                    width: 2,
+                                    color: Colors.white,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            itemCount: designedData.length - _itemsCount1*2,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ):Container(),
+                ],
+              ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: ElevatedButton(
@@ -884,11 +1176,11 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
     );
   }
 
-  List<ImageProvider<dynamic>> numberOfSteps(var index2) {
+  List<ImageProvider<dynamic>> numberOfSteps(int start,int length) {
     List<ImageProvider<dynamic>> li = [];
-    for (int i = 0; i < _itemsCount; i++) {
+    for (int i = start; i < length; i++) {
       li.add(
-        CachedNetworkImageProvider('${designedData[index2]['Place ${i +1}']['img']}'),
+        CachedNetworkImageProvider('${designedData[i]['Place 1']['img']}'),
       );
     }
     return li;

@@ -68,7 +68,14 @@ class personalGuidersCity extends StatelessWidget {
                                           CrossAxisAlignment.center,
                                           children: [
                                             ClipOval(
-                                              child: CachedNetworkImage(
+                                              child: snapshot.data[index]['imgURL'].length == 0? CachedNetworkImage(
+                                                imageUrl:
+                                                'https://firebasestorage.googleapis.com/v0/b/flutter-maps-345318.appspot.com/o/Images%2FUsers%2FPlace_holder%2Fplace_holder.jpg?alt=media&token=6a90fef2-9e24-4874-a740-0c34fab2c9bf',
+                                                fit: BoxFit.fill,
+                                                height: 75,
+                                                width: 75,
+                                                placeholder: (context, url) => CircularProgressIndicator(),
+                                              ):CachedNetworkImage(
                                                 imageUrl:
                                                 '${snapshot.data[index]['imgURL']}',
                                                 fit: BoxFit.fill,
