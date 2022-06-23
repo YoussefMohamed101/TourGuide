@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:untitled2/auth/secrets.dart';
 import 'package:untitled2/screens/fixedSuggestionPlans.dart';
+import 'package:untitled2/screens/maps/suggestionPlanMap.dart';
 import 'package:untitled2/services/GetData.dart';
 import 'package:path/path.dart' as p;
 
@@ -206,7 +208,17 @@ class _myPlansState extends State<myPlans> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        leading: IconButton(
+            onPressed: () {
+              PlacesList = [];
+              Navigator.pop(context);
+            },
+            icon: const Icon(
+              Icons.keyboard_arrow_left,
+              size: 45,
+            )),
+      ),
       body: Container(
         width: double.infinity,
         child: Column(
@@ -241,11 +253,9 @@ class _myPlansState extends State<myPlans> {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 )),
-
             SizedBox(
               height: 50,
             ),
-
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
@@ -261,13 +271,9 @@ class _myPlansState extends State<myPlans> {
                     ),
                   )),
             ),
-
-
             SizedBox(
               height: 50,
             ),
-
-
             Expanded(
               child: StreamBuilder(
                   stream: FirebaseFirestore.instance
@@ -277,10 +283,16 @@ class _myPlansState extends State<myPlans> {
                       .snapshots(),
                   builder: (context, AsyncSnapshot snapshot) {
                     if (snapshot.hasData) {
-                      // print(snapshot.data.docs[0].data());
-                      // if(snapshot.data.docs.length == 0){
-                      //   return Text('nooooooooooooo');
-                      // }
+                      if(snapshot.data.docs.length == 0){
+                        return Center(
+                            child: Text(
+                                'There is no plans right now',
+                              style: TextStyle(
+                                fontSize: 25,
+                              ),
+                            ),
+                        );
+                      }
                       return ListView.separated(
                         shrinkWrap: true,
                           itemBuilder: (context, index) => Padding(
@@ -351,13 +363,37 @@ class _myPlansState extends State<myPlans> {
                                                     ),
                                                   ),
                                                   onPressed: () async {
-                                                    var data = await showPlanDetails(snapshot.data.docs[index].data()['id'], snapshot.data.docs[index].data()['planID']);
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                          builder: (context) => fixedSuggestionPlans(planDetail: data[0]),
-                                                        )
-                                                    );
+                                                    if(snapshot.data.docs[index].data()['Generated'] == 'true'){
+                                                      var data = await showGeneratedPlanDetails(snapshot.data.docs[index].data()['title'],userdata23[4]);
+                                                      // log(snapshot.data.docs[index].data()['Generated'].toString());
+                                                      print(data);
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) => suggestionPlanMap(
+                                                              savedPlan: true,
+                                                              planName: snapshot.data.docs[index].data()['title'],
+                                                              cityid: 'sadasd',
+                                                              numberOfSights: 4,
+                                                              day: 'fghfg',
+                                                              numofDays: 3,
+                                                              SortType: '',
+                                                              StartPoint: '',
+                                                              pickedPlaces: '',
+                                                            ),
+                                                          )
+                                                      );
+
+                                                    }
+                                                    else{
+                                                      var data = await showPlanDetails(snapshot.data.docs[index].data()['id'], snapshot.data.docs[index].data()['planID']);
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) => fixedSuggestionPlans(planDetail: data[0]),
+                                                          )
+                                                      );
+                                                    }
                                                   },
                                                   child: const Text(
                                                     'View',
@@ -386,23 +422,43 @@ class _myPlansState extends State<myPlans> {
                                                     ),
                                                   ),
                                                   onPressed: () async {
-                                                    await FirebaseFirestore.instance
-                                                        .collection('users')
-                                                        .doc(userdata23[4])
-                                                        .collection('userPlans').where('planID',isEqualTo: '${snapshot.data.docs[index].data()['planID']}')
-                                                        .get()
-                                                        .then((value) async {
-                                                      for(var item in value.docs){
-                                                        print(item.id);
+                                                    if(snapshot.data.docs[index].data()['Generated'] == 'true'){
+                                                      await FirebaseFirestore.instance
+                                                          .collection('users')
+                                                          .doc(userdata23[4])
+                                                          .collection('userPlans').where('title',isEqualTo: '${snapshot.data.docs[index].data()['title']}')
+                                                          .get()
+                                                          .then((value) async {
+                                                        for(var item in value.docs){
+                                                          await FirebaseFirestore.instance
+                                                              .collection('users')
+                                                              .doc(userdata23[4])
+                                                              .collection('userPlans')
+                                                              .doc(item.id)
+                                                              .delete();
+                                                        }
+
+                                                      });
+                                                    }
+                                                    else{
                                                         await FirebaseFirestore.instance
                                                             .collection('users')
                                                             .doc(userdata23[4])
-                                                            .collection('userPlans')
-                                                            .doc(item.id)
-                                                            .delete();
-                                                      }
+                                                            .collection('userPlans').where('planID',isEqualTo: '${snapshot.data.docs[index].data()['planID']}')
+                                                            .get()
+                                                            .then((value) async {
+                                                          for(var item in value.docs){
+                                                            print(item.id);
+                                                            await FirebaseFirestore.instance
+                                                                .collection('users')
+                                                                .doc(userdata23[4])
+                                                                .collection('userPlans')
+                                                                .doc(item.id)
+                                                                .delete();
+                                                          }
 
-                                                    });
+                                                        });
+                                                    }
                                                   },
                                                   child: Text('Delete'),
                                                 ),

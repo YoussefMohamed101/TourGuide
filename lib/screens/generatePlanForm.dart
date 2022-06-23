@@ -61,7 +61,17 @@ class _generatePlanFormState extends State<generatePlanForm> {
   Widget build(BuildContext context) {
     print(firstGenPlanEnter);
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        leading: IconButton(
+            onPressed: () {
+              PlacesList = [];
+              Navigator.pop(context);
+            },
+            icon: const Icon(
+              Icons.keyboard_arrow_left,
+              size: 45,
+            )),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -224,6 +234,7 @@ class _generatePlanFormState extends State<generatePlanForm> {
                       ),
                     ),
                     SizedBox(height: 10,),
+                    selectedSelectedPlaces != "Choose Places"?
                     Row(
                       children: [
                         Expanded(
@@ -322,6 +333,53 @@ class _generatePlanFormState extends State<generatePlanForm> {
                                 ),
                               ),
                             ],
+                          ),
+                        ),
+                      ],
+                    ):
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Starting Day",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width*0.44,
+                          decoration: BoxDecoration(
+                              border: Border.all(),
+                              borderRadius: BorderRadius.circular(10)
+                          ),
+                          padding: EdgeInsets.only(
+                            left: 10,
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: selectedStartDay,
+                              items: StartDayItems
+                                  .map<DropdownMenuItem<String>>((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(
+                                    value,
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  selectedStartDay = newValue!;
+                                  PlacesList.clear();
+                                });
+                              },
+                            ),
                           ),
                         ),
                       ],
@@ -461,7 +519,7 @@ class _generatePlanFormState extends State<generatePlanForm> {
                                     MaterialPageRoute(
                                         builder: (context) => famousPlacesForGenPlan(),
                                         settings: RouteSettings(
-                                          arguments: [id,selectedNumOfDays,selectedStartDay],
+                                          arguments: [id,selectedNumOfDays,selectedStartDay,selectedSelectedPlaces],
                                         )
                                     ));
                               },
@@ -524,7 +582,7 @@ class _generatePlanFormState extends State<generatePlanForm> {
                                       MaterialPageRoute(
                                           builder: (context) => famousPlacesForGenPlan(),
                                           settings: RouteSettings(
-                                            arguments: [id,selectedNumOfDays,selectedStartDay],
+                                            arguments: [id,selectedNumOfDays,selectedStartDay,selectedSelectedPlaces],
                                           )
                                       ));
                                 },
@@ -570,7 +628,15 @@ class _generatePlanFormState extends State<generatePlanForm> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => suggestionPlanMap(cityid: id,numberOfSights: 3 * int.parse(selectedNumOfDays!), numofDays: int.parse(selectedNumOfDays!),day: selectedStartDay,SortType: selectedSortType!,StartPoint: selectedStartPoint!,pickedPlaces: selectedSelectedPlaces!),
+                                  builder: (context) => suggestionPlanMap(
+                                      savedPlan: false,
+                                      planName : planName.text,
+                                      cityid: id,
+                                      numberOfSights: 3 * int.parse(selectedNumOfDays!),
+                                      numofDays: int.parse(selectedNumOfDays!),
+                                      day: selectedStartDay,SortType: selectedSortType!,
+                                      StartPoint: selectedStartPoint!,
+                                      pickedPlaces: selectedSelectedPlaces!),
                                 )
                             );
                           }

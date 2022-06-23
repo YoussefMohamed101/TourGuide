@@ -94,7 +94,6 @@ class _home_screenState extends State<home_screen> {
   }
   @override
   Widget build(BuildContext context) {
-    print(userdata);
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -122,7 +121,6 @@ class _home_screenState extends State<home_screen> {
 
                   }
               );
-              print(userdata23);
               return Column(
                 children: [
                   Stack(

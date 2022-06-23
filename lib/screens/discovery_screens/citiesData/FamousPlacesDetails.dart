@@ -7,6 +7,8 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:untitled2/services/GetData.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
+import '../../../auth/secrets.dart';
+
 class FamousePlacesDetails extends StatefulWidget {
   const FamousePlacesDetails({Key? key}) : super(key: key);
 
@@ -270,7 +272,11 @@ class _FamousePlacesDetailsState extends State<FamousePlacesDetails> {
                                 side: const BorderSide(width: 1),
                               ),
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              launchInBrowser(
+                                  Uri.parse('https://www.google.com/maps/dir/${snapshot.data[0]['coordinates'][0]},${snapshot.data[0]['coordinates'][1]}/${position!.latitude},${position!.longitude}')
+                              );
+                            },
                             label: const Text('View on map'),
                           ),
                         ],

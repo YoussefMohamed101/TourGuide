@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled2/services/authentication.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 var userdata = [];
 var userid;
@@ -30,17 +33,14 @@ getCities() async {
     await city.get().then((value) {
       cityData = [];
       for (var element in value.docs) {
-        cityData.add(
-            {
-              'id': element.data()['id'],
-              'name': element.data()['name'],
-              'imgURL': element.data()['imgURL'],
-            }
-        );
+        cityData.add({
+          'id': element.data()['id'],
+          'name': element.data()['name'],
+          'imgURL': element.data()['imgURL'],
+        });
       }
     });
-  }
-  catch (e) {
+  } catch (e) {
     print('**************************************');
     print(e.toString());
   }
@@ -60,23 +60,25 @@ getCitydata(var id) async {
 
 getPlaces(var id) async {
   var places;
-  var governID= [];
+  var governID = [];
   placesData = [];
-  places = FirebaseFirestore.instance.collection("Governments").doc(id).collection('info');
+  places = FirebaseFirestore.instance
+      .collection("Governments")
+      .doc(id)
+      .collection('info');
   await places.get().then((value) {
     placesData = [];
     for (var element in value.docs) {
-      placesData.add(
-          {
-            'id' : element.data()['id'],
-            'name': element.data()['name'],
-            'imgURL' : element.data()['img'][0],
-            'information': element.data()['information'],
-            'coordinates': element.data()['coordinates'],
-            'timesOfWork': element.data()['timesOfWork'],
-          }
-        //element.data(),
-      );
+      placesData.add({
+        'id': element.data()['id'],
+        'name': element.data()['name'],
+        'imgURL': element.data()['img'][0],
+        'information': element.data()['information'],
+        'coordinates': element.data()['coordinates'],
+        'timesOfWork': element.data()['timesOfWork'],
+      }
+          //element.data(),
+          );
     }
   });
   return placesData;
@@ -108,9 +110,13 @@ getPlaces(var id) async {
 
 getPlacedata(var id) async {
   var places;
-  var governID= [];
+  var governID = [];
   placesData = [];
-  places = FirebaseFirestore.instance.collection("Governments").doc(id[1]).collection('info').doc(id[0]);
+  places = FirebaseFirestore.instance
+      .collection("Governments")
+      .doc(id[1])
+      .collection('info')
+      .doc(id[0]);
   await places.get().then((value) {
     placesData = [];
     placesData.add(
@@ -122,7 +128,10 @@ getPlacedata(var id) async {
 
 gettourGuiders(var cityname) async {
   var userstore = FirebaseFirestore.instance.collection("tourGuiders");
-  await userstore.where("work_site",isEqualTo: "$cityname").get().then((value) {
+  await userstore
+      .where("work_site", isEqualTo: "$cityname")
+      .get()
+      .then((value) {
     tourGuidersData = [];
     for (var element in value.docs) {
       tourGuidersData.add(
@@ -135,37 +144,38 @@ gettourGuiders(var cityname) async {
 }
 
 searchEngine() async {
-  var governID= [];
+  var governID = [];
   searchList = [];
-  await FirebaseFirestore.instance.collection("Governments").get().then((value) {
+  await FirebaseFirestore.instance
+      .collection("Governments")
+      .get()
+      .then((value) {
     for (var element in value.docs) {
-      governID.add(
-          {
-            'id' : element.data()['id'],
-          }
-      );
-      searchList.add(
-          {
-            'id' : element.data()['id'],
-            'name': element.data()['name'],
-            'coordinates': element.data()['coordinates'],
-          }
-      );
+      governID.add({
+        'id': element.data()['id'],
+      });
+      searchList.add({
+        'id': element.data()['id'],
+        'name': element.data()['name'],
+        'coordinates': element.data()['coordinates'],
+      });
     }
   });
-  for(var index in governID){
+  for (var index in governID) {
     print(index['id']);
-    await FirebaseFirestore.instance.collection("Governments").doc(index['id']).collection('info').get().then((value) {
+    await FirebaseFirestore.instance
+        .collection("Governments")
+        .doc(index['id'])
+        .collection('info')
+        .get()
+        .then((value) {
       for (var element in value.docs) {
-        searchList.add(
-            {
-              'id' : element.data()['id'],
-              'name': element.data()['name'],
-              'cityID': index['id'],
-              'coordinates': element.data()['coordinates'],
-
-            }
-        );
+        searchList.add({
+          'id': element.data()['id'],
+          'name': element.data()['name'],
+          'cityID': index['id'],
+          'coordinates': element.data()['coordinates'],
+        });
       }
     });
   }
@@ -176,20 +186,18 @@ searchEngine() async {
 }
 
 getCityCoordinates(var id) async {
-  var governID= [];
-  var places= [];
+  var governID = [];
+  var places = [];
   try {
     var city = FirebaseFirestore.instance.collection("Governments");
-    await city.where('id',isEqualTo: id).get().then((value) {
+    await city.where('id', isEqualTo: id).get().then((value) {
       cityCordData = [];
       for (var element in value.docs) {
-        governID.add(
-            {
-              'id' : element.data()['id'],
-              'coordinates': element.data()['coordinates'],
-              'name': element.data()['name'],
-            }
-        );
+        governID.add({
+          'id': element.data()['id'],
+          'coordinates': element.data()['coordinates'],
+          'name': element.data()['name'],
+        });
       }
     });
 
@@ -207,20 +215,15 @@ getCityCoordinates(var id) async {
           'cityID': governID[0]['id'],
           'information': item.data()['information'],
           'timesOfWork': item.data()['timesOfWork'],
-
         });
       }
     });
-  }
-  catch (e) {
+  } catch (e) {
     print('**************************************');
     print(e.toString());
   }
 
-  cityCordData.add({
-    'city' : governID,
-    'places' : places
-  });
+  cityCordData.add({'city': governID, 'places': places});
   return cityCordData;
 }
 
@@ -228,7 +231,7 @@ displayPlans(cityId, numOfDays) async {
   var retriveData = [];
   try {
     var gov =
-    FirebaseFirestore.instance.collection('Governments').doc('$cityId');
+        FirebaseFirestore.instance.collection('Governments').doc('$cityId');
 
     await gov
         .collection('plans')
@@ -248,7 +251,6 @@ displayPlans(cityId, numOfDays) async {
   }
 }
 
-
 showPlanDetails(cityId, planId) async {
   try {
     var data = [];
@@ -259,9 +261,7 @@ showPlanDetails(cityId, planId) async {
         .doc(planId)
         .get()
         .then((value) {
-      data.addAll({
-        value.data()
-      });
+      data.addAll({value.data()});
     });
     if (data.isEmpty) {
       return [];
@@ -273,61 +273,38 @@ showPlanDetails(cityId, planId) async {
   }
 }
 
+showGeneratedPlanDetails(title, userID) async {
+  try {
+    var data = [];
+    var gov = await FirebaseFirestore.instance
+        .collection('users')
+        .doc('$userID')
+        .collection('userPlans')
+        .where('title', isEqualTo: title)
+        .get()
+        .then((value) {
+          for(var item in value.docs){
+            data.addAll(
+                {item.data()['Data']}
+            );
+            break;
+          }
+    });
+    if (data.isEmpty) {
+      return [];
+    } else {
+      return data[0];
+    }
+  } catch (e) {
+    print(e);
+  }
+}
 
-
-
-
-
-//
-// getCityLocation(var id) async{
-//   await FirebaseFirestore.instance.collection("Governments").where('id',isEqualTo: id).get().then((value) {
-//     for (var element in value.docs) {
-//       print(element.data());
-//     }
-//   });
-// }
-
-//
-// getPlaces(var id) async {
-//   var places = FirebaseFirestore.instance.collection("Governments").doc(id).collection('info');
-//   await places.get().then((value) {
-//     placesData = [];
-//     for (var element in value.docs) {
-//       placesData.add(
-//         // {
-//         //   'id' : element.data()['id'],
-//         //   'name': element.data()['name'],
-//         //   'imgURL' : element.data()['img'][0],
-//         //   'information': element.data()['information'],
-//         // }
-//         element.data(),
-//       );
-//     }
-//   });
-//   return placesData;
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// getUser() async {
-//   Auth auth = new Auth();
-//   var user = await auth.getCurrentUser();
-//   print(user?.uid);
-//   var userstore = FirebaseFirestore.instance.collection("users").doc(user?.uid);
-//   await userstore.get().then((value) {
-//     userdata.addAll([value.data()?['username'],value.data()?['photourl']]);
-//   });
-//   return userdata;
-// }
+Future<void> launchInBrowser(Uri url) async {
+  if (!await launchUrl(
+    url,
+    mode: LaunchMode.externalApplication,
+  )) {
+    throw 'Could not launch $url';
+  }
+}

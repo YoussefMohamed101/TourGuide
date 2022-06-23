@@ -27,6 +27,8 @@ import 'dart:typed_data';
 class suggestionPlanMap extends StatefulWidget {
   suggestionPlanMap({
     Key? key,
+    required this.savedPlan,
+    required this.planName,
     required this.cityid,
     required this.numberOfSights,
     required this.numofDays,
@@ -36,6 +38,8 @@ class suggestionPlanMap extends StatefulWidget {
     required this.pickedPlaces,
   }) : super(key: key);
 
+  final bool savedPlan;
+  final String planName;
   final String cityid;
   var numberOfSights;
   var day;
@@ -71,11 +75,13 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
   int activeStep = 0;
   double _containerHeight = 255.0;
   int _itemsCount1 = 3;
-  int hour = 7;
+  List hour = [8,10,12];
   List totalDistance = [];
   List totalDuration = [];
   DistanceMatrix? DistanceMatrixPlaces;
   List designedData = [];
+  bool saved = false;
+  bool showSavePlanButton = true;
 
   Future<void> getCityLocation() async {
     await SortPlacesByDistanceAndOpeningTime();
@@ -204,9 +210,6 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
           .compareTo(int.parse(b["workingTime"][0])) as int);
     }
 
-    print('//////////////////////////////////////////////////');
-    log(limitCityNPlacesDetails.toString());
-
     for (var i = 0; i < limitCityNPlacesDetails.length; i++) {
       String markId = limitCityNPlacesDetails[i]['id'] as String;
       List position = limitCityNPlacesDetails[i]['coordinates'] as List;
@@ -283,17 +286,6 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
 
   }
 
-  Future<void> sortdata(var designedData) async {
-    //log(totalDistance.toString());
-    log(totalDistance.toString());
-
-    // for(int i =0;i<designedData.length;i++) {
-    //
-    //   log(designedData[i]['Place 1']['coordinates'].toString());
-    //   log(designedData[i]['distance']['text'][0].toString());
-    // }
-  }
-
   Future<void> polylineCamera() async {
     var center = [
       (origin!.position.latitude + destination!.position.latitude) / 2,
@@ -309,13 +301,61 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
         CameraUpdate.newCameraPosition(_polylineCameraPosition!));
   }
 
+  Future<void> getSavedData() async {
+    designedData = await showGeneratedPlanDetails(widget.planName,userdata23[4]);
+    cityNPlacesDetails = await getCityCoordinates(designedData[0]['id']);
+    _myCameraPosition = CameraPosition(
+      target: LatLng(cityNPlacesDetails[0]['city'][0]['coordinates'][0],
+          cityNPlacesDetails[0]['city'][0]['coordinates'][1]),
+      zoom: 11.4746,
+    );
+    for (var i = 0; i < designedData.length; i++) {
+      String markId = designedData[i]['Place 1']['id'] as String;
+      List position = designedData[i]['Place 1']['coordinates'] as List;
+      var infoWindow = designedData[i]['Place 1']['name'];
+
+      myMarkers.addLabelMarker(LabelMarker(
+        label: infoWindow,
+        markerId: MarkerId(markId),
+        position: LatLng(position[0] - 0.00002,
+            position[1]),
+        backgroundColor: Colors.white,
+        textStyle: TextStyle(color: Colors.black, fontSize: 20),
+      ));
+
+      myMarkers.add(
+        Marker(
+          icon: await MarkerIcon.downloadResizePictureCircle(
+              '${designedData[i]['Place 1']['img']}',
+              size: 150,
+              addBorder: true,
+              borderColor: Colors.white,
+              borderSize: 15),
+          markerId: MarkerId(markId),
+          position: LatLng(position[0], position[1]),
+        ),
+      );
+    }
+    showSavePlanButton =false;
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     WidgetsBinding.instance?.addObserver(this);
-    if (checkPermission()) {
-      getCityLocation();
+    if(widget.savedPlan == false) {
+      if (checkPermission()) {
+        getCityLocation();
+      }
+    }
+    else{
+      if (checkPermission()) {
+        getSavedData();
+      }
     }
   }
 
@@ -351,20 +391,6 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
 
   @override
   Widget build(BuildContext context) {
-    // print(totalDistance);
-    // print(totalDuration);
-    // for(int i=0;i< 3;i++){
-    //   log(limitCityNPlacesDetails[i]['workingTime'].toString());
-    //   log(limitCityNPlacesDetails[i]['name'].toString());
-    //   log(limitCityNPlacesDetails[i]['durationText'].toString());
-    // }
-    // log(limitCityNPlacesDetails[0].toString());
-    // log(totalDistance.toString());
-    // log(totalDuration.toString());
-    // log(designedData[1]['places']['Place 1']['coordinates'].toString());
-    // log(designedData[1]['places']['Place 2']['coordinates'].toString());
-    // log(designedData[1]['places']['distance 1'].toString());
-    sortdata(designedData);
     var permission = checkPermission();
     return WillPopScope(
       onWillPop: () async {
@@ -387,7 +413,7 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
               )),
           backgroundColor: const Color.fromRGBO(249, 168, 38, 1),
           title: const Text(
-            'Suggested plan',
+            'Generated plan',
             style: TextStyle(
               color: Colors.white,
             ),
@@ -461,7 +487,6 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
   Widget PlanDetails() {
     // _itemsCount = limitCityNPlacesDetails.length~/designedData.length;
     _itemsCount1 = 3;
-    hour = 6;
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
@@ -541,8 +566,6 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
                             physics: NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             itemBuilder: (context, index) {
-                              hour += 2;
-
                               return Container(
                                 width: double.infinity,
                                 height: _containerHeight,
@@ -558,9 +581,9 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        hour > 12
-                                            ? '${hour - 12}:00 PM -- ${designedData[index]['Place 1']['name']}'
-                                            : '${hour}:00 AM -- ${designedData[index]['Place 1']['name']}',
+                                        hour[index] == 12?
+                                        '${hour[index]}:00 PM -- ${designedData[index]['Place 1']['name']}':
+                                        '${hour[index]}:00 AM -- ${designedData[index]['Place 1']['name']}',
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
@@ -599,8 +622,7 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
                                                   const FamousePlacesDetails(),
                                                   settings:
                                                   RouteSettings(arguments: [
-                                                    limitCityNPlacesDetails[index]
-                                                    ['id'],
+                                                    designedData[index]['Place 1']['id'],
                                                     cityNPlacesDetails[0]['city'][0]
                                                     ['id'],
                                                   ]),
@@ -746,8 +768,6 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
                             physics: NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             itemBuilder: (context, index) {
-                              hour += 2;
-
                               return Container(
                                 width: double.infinity,
                                 height: _containerHeight,
@@ -763,9 +783,9 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        hour > 12
-                                            ? '${hour - 12}:00 PM -- ${designedData[index+3]['Place 1']['name']}'
-                                            : '${hour}:00 AM -- ${designedData[index+3]['Place 1']['name']}',
+                                        hour[index] == 12?
+                                        '${hour[index]}:00 PM -- ${designedData[index+3]['Place 1']['name']}':
+                                        '${hour[index]}:00 AM -- ${designedData[index+3]['Place 1']['name']}',
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
@@ -782,7 +802,7 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                       Text(
-                                        '${designedData[index]['Place 1']['information']}',
+                                        '${designedData[index+3]['Place 1']['information']}',
                                         style: TextStyle(
                                           fontSize: 15,
                                         ),
@@ -887,6 +907,8 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
                       ),
                     ],
                   ):Container(),
+
+
                   designedData.length > 6?
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -922,7 +944,8 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
-                        height: (designedData.length - _itemsCount1*2) * (_containerHeight + (designedData.length - _itemsCount1*2) + 80),
+                        height: designedData.length > 9? (_itemsCount1) * (_containerHeight + (_itemsCount1) + 80)
+                            :(designedData.length - _itemsCount1*2) * (_containerHeight + (designedData.length - _itemsCount1*2) + 80),
                         child: ImageStepper(
                           lineColor: Colors.white,
                           lineLength: 310,
@@ -931,7 +954,7 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
                           steppingEnabled: false,
                           stepReachedAnimationEffect: Curves.ease,
                           scrollingDisabled: true,
-                          images: numberOfSteps(6,designedData.length),
+                          images: designedData.length > 9? numberOfSteps(6,_itemsCount1*3) : numberOfSteps(6,designedData.length),
                           //activeStep property set to activeStep variable defined above.
                           activeStep: activeStep,
                           // This ensures step-tapping updates the activeStep.
@@ -950,8 +973,6 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
                             physics: NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             itemBuilder: (context, index) {
-                              hour += 2;
-
                               return Container(
                                 width: double.infinity,
                                 height: _containerHeight,
@@ -967,9 +988,9 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        hour > 12
-                                            ? '${hour - 12}:00 PM -- ${designedData[index+6]['Place 1']['name']}'
-                                            : '${hour}:00 AM -- ${designedData[index+6]['Place 1']['name']}',
+                                        hour[index] == 12?
+                                        '${hour[index]}:00 PM -- ${designedData[index+6]['Place 1']['name']}':
+                                        '${hour[index]}:00 AM -- ${designedData[index+6]['Place 1']['name']}',
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
@@ -986,7 +1007,7 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                       Text(
-                                        '${designedData[index]['Place 1']['information']}',
+                                        '${designedData[index+6]['Place 1']['information']}',
                                         style: TextStyle(
                                           fontSize: 15,
                                         ),
@@ -1085,7 +1106,417 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
                                 ],
                               ),
                             ),
-                            itemCount: designedData.length - _itemsCount1*2,
+                            itemCount: designedData.length > 9? _itemsCount1 : designedData.length - _itemsCount1*2,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ):Container(),
+
+
+                  designedData.length > 9?
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Column(
+                      children: [
+                        SizedBox(height: 15,),
+                        Container(
+                          color: Colors.white,
+                          height: 3,
+                          width: double.infinity,
+                        ),
+                        SizedBox(height: 15,),
+                      ],
+                    ),
+                  ):Container(),
+                  designedData.length > 9?
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 20.0,
+                        top: 10
+                    ),
+                    child: Text(
+                      'Day 4',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 35,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ):Container(),
+                  designedData.length > 9?
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: designedData.length > 12? (_itemsCount1) * (_containerHeight + (_itemsCount1) + 80)
+                            :(designedData.length - _itemsCount1*3) * (_containerHeight + (designedData.length - _itemsCount1*3) + 80),
+                        child: ImageStepper(
+                          lineColor: Colors.white,
+                          lineLength: 310,
+                          lineDotRadius: 3,
+                          enableNextPreviousButtons: false,
+                          steppingEnabled: false,
+                          stepReachedAnimationEffect: Curves.ease,
+                          scrollingDisabled: true,
+                          images: designedData.length > 12? numberOfSteps(9,_itemsCount1*4) : numberOfSteps(9,designedData.length),
+                          //activeStep property set to activeStep variable defined above.
+                          activeStep: activeStep,
+                          // This ensures step-tapping updates the activeStep.
+                          onStepReached: (index) {
+                            setState(() {
+                              activeStep = index;
+                            });
+                          },
+                          direction: Axis.vertical,
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 40.0),
+                          child: ListView.separated(
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                width: double.infinity,
+                                height: _containerHeight,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors.white,
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 15),
+                                  child: Column(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        hour[index] == 12?
+                                        '${hour[index]}:00 PM -- ${designedData[index+9]['Place 1']['name']}':
+                                        '${hour[index]}:00 AM -- ${designedData[index+9]['Place 1']['name']}',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        'Visit Duration: 2 hour',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        '${designedData[index+9]['Place 1']['information']}',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                        ),
+                                        maxLines: 3,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Container(
+                                        height: 1,
+                                        color: Colors.black,
+                                      ),
+                                      Container(
+                                        width: double.infinity,
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                  const FamousePlacesDetails(),
+                                                  settings:
+                                                  RouteSettings(arguments: [
+                                                    limitCityNPlacesDetails[index+9]
+                                                    ['id'],
+                                                    cityNPlacesDetails[0]['city'][0]
+                                                    ['id'],
+                                                  ]),
+                                                ));
+                                          },
+                                          child: Text('Read more'),
+                                          style: ElevatedButton.styleFrom(
+                                            onPrimary: Colors.white,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                              BorderRadius.circular(20.0),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                            separatorBuilder: (context, index) => Container(
+                              height: MediaQuery.of(context).size.height * 0.12,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    height: 20,
+                                    width: 2,
+                                    color: Colors.white,
+                                  ),
+                                  // Container(
+                                  //   height: 2,
+                                  //   width: 200,
+                                  //   color: Colors.white,
+                                  // ),
+
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.directions_car_rounded,
+                                          color: Colors.white,
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            'After ${designedData[index+9]['distance']},${designedData[index+9]['duration']}',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  // Container(
+                                  //   height: 2,
+                                  //   width: 200,
+                                  //   color: Colors.white,
+                                  // ),
+                                  Container(
+                                    height: 20,
+                                    width: 2,
+                                    color: Colors.white,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            itemCount: designedData.length > 12? _itemsCount1 : designedData.length - _itemsCount1*3,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ):Container(),
+
+
+
+                  designedData.length > 12?
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Column(
+                      children: [
+                        SizedBox(height: 15,),
+                        Container(
+                          color: Colors.white,
+                          height: 3,
+                          width: double.infinity,
+                        ),
+                        SizedBox(height: 15,),
+                      ],
+                    ),
+                  ):Container(),
+                  designedData.length > 12?
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 20.0,
+                        top: 10
+                    ),
+                    child: Text(
+                      'Day 5',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 35,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ):Container(),
+                  designedData.length > 12?
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: (designedData.length - _itemsCount1*4) * (_containerHeight + (designedData.length - _itemsCount1*4) + 80),
+                        child: ImageStepper(
+                          lineColor: Colors.white,
+                          lineLength: 310,
+                          lineDotRadius: 3,
+                          enableNextPreviousButtons: false,
+                          steppingEnabled: false,
+                          stepReachedAnimationEffect: Curves.ease,
+                          scrollingDisabled: true,
+                          images: numberOfSteps(12,designedData.length),
+                          //activeStep property set to activeStep variable defined above.
+                          activeStep: activeStep,
+                          // This ensures step-tapping updates the activeStep.
+                          onStepReached: (index) {
+                            setState(() {
+                              activeStep = index;
+                            });
+                          },
+                          direction: Axis.vertical,
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 40.0),
+                          child: ListView.separated(
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                width: double.infinity,
+                                height: _containerHeight,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors.white,
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 15),
+                                  child: Column(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        hour[index] == 12?
+                                        '${hour[index]}:00 PM -- ${designedData[index+12]['Place 1']['name']}':
+                                        '${hour[index]}:00 AM -- ${designedData[index+12]['Place 1']['name']}',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        'Visit Duration: 2 hour',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        '${designedData[index+12]['Place 1']['information']}',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                        ),
+                                        maxLines: 3,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Container(
+                                        height: 1,
+                                        color: Colors.black,
+                                      ),
+                                      Container(
+                                        width: double.infinity,
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                  const FamousePlacesDetails(),
+                                                  settings:
+                                                  RouteSettings(arguments: [
+                                                    limitCityNPlacesDetails[index+12]
+                                                    ['id'],
+                                                    cityNPlacesDetails[0]['city'][0]
+                                                    ['id'],
+                                                  ]),
+                                                ));
+                                          },
+                                          child: Text('Read more'),
+                                          style: ElevatedButton.styleFrom(
+                                            onPrimary: Colors.white,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                              BorderRadius.circular(20.0),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                            separatorBuilder: (context, index) => Container(
+                              height: MediaQuery.of(context).size.height * 0.12,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    height: 20,
+                                    width: 2,
+                                    color: Colors.white,
+                                  ),
+                                  // Container(
+                                  //   height: 2,
+                                  //   width: 200,
+                                  //   color: Colors.white,
+                                  // ),
+
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.directions_car_rounded,
+                                          color: Colors.white,
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            'After ${designedData[index+12]['distance']},${designedData[index+12]['duration']}',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  // Container(
+                                  //   height: 2,
+                                  //   width: 200,
+                                  //   color: Colors.white,
+                                  // ),
+                                  Container(
+                                    height: 20,
+                                    width: 2,
+                                    color: Colors.white,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            itemCount: designedData.length - _itemsCount1*4,
                           ),
                         ),
                       ),
@@ -1093,78 +1524,155 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
                   ):Container(),
                 ],
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: ElevatedButton(
-                  onPressed: () async {
-                    totalDistance.add('0');
-                    totalDuration.add('0');
-                    List name = [];
-                    List id = [];
-                    List cityId = [];
-                    List coordinates = [];
-                    List img = [];
-                    List information = [];
-                    List distanceValue = [];
-                    List distanceText = [];
-                    List durationValue = [];
-                    List durationText = [];
-                    List workingTime = [];
-                    for (int i = 0; i < limitCityNPlacesDetails.length; i++) {
-                      name.add(limitCityNPlacesDetails[i]['name']);
-                      id.add(limitCityNPlacesDetails[i]['id']);
-                      cityId.add(limitCityNPlacesDetails[i]['cityID']);
-                      coordinates.add(
-                          '${limitCityNPlacesDetails[i]['coordinates'][0]} ${limitCityNPlacesDetails[i]['coordinates'][1]}');
-                      img.add(limitCityNPlacesDetails[i]['img']);
-                      information
-                          .add(limitCityNPlacesDetails[i]['information']);
-                      // distanceValue.add(limitCityNPlacesDetails[i]['distanceValue']);
-                      distanceText.add(totalDistance[i]);
-                      // durationValue.add(limitCityNPlacesDetails[i]['durationValue']);
-                      durationText.add(totalDuration[i]);
-                      workingTime.add(
-                          '${limitCityNPlacesDetails[i]['workingTime'][0]} ${limitCityNPlacesDetails[i]['workingTime'][1]}');
-                    }
-                    print(coordinates);
-                    await FirebaseFirestore.instance
-                        .collection("plans")
-                        .doc()
-                        .set({
-                      "name": name,
-                      "id": id,
-                      "cityId": cityId,
-                      "coordinates": coordinates,
-                      "img": img,
-                      "information": information,
-                      "distanceValue": distanceValue,
-                      "distanceText": distanceText,
-                      "durationValue": durationValue,
-                      "durationText": durationText,
-                      "workingTime": workingTime,
-                      "userID": FirebaseAuth.instance.currentUser!.uid,
-                    });
+              Visibility(
+                visible: showSavePlanButton,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      // totalDistance.add('0');
+                      // totalDuration.add('0');
+                      // List name = [];
+                      // List id = [];
+                      // List cityId = [];
+                      // List coordinates = [];
+                      // List img = [];
+                      // List information = [];
+                      // List distanceValue = [];
+                      // List distanceText = [];
+                      // List durationValue = [];
+                      // List durationText = [];
+                      // List workingTime = [];
+                      // for (int i = 0; i < limitCityNPlacesDetails.length; i++) {
+                      //   name.add(limitCityNPlacesDetails[i]['name']);
+                      //   id.add(limitCityNPlacesDetails[i]['id']);
+                      //   cityId.add(limitCityNPlacesDetails[i]['cityID']);
+                      //   coordinates.add(
+                      //       '${limitCityNPlacesDetails[i]['coordinates'][0]} ${limitCityNPlacesDetails[i]['coordinates'][1]}');
+                      //   img.add(limitCityNPlacesDetails[i]['img']);
+                      //   information
+                      //       .add(limitCityNPlacesDetails[i]['information']);
+                      //   // distanceValue.add(limitCityNPlacesDetails[i]['distanceValue']);
+                      //   distanceText.add(totalDistance[i]);
+                      //   // durationValue.add(limitCityNPlacesDetails[i]['durationValue']);
+                      //   durationText.add(totalDuration[i]);
+                      //   workingTime.add(
+                      //       '${limitCityNPlacesDetails[i]['workingTime'][0]} ${limitCityNPlacesDetails[i]['workingTime'][1]}');
+                      // }
+                      // print(coordinates);
 
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //       builder: (context) => const FamousePlacesDetails(),
-                    //       settings: RouteSettings(
-                    //           arguments: [
-                    //             limitCityNPlacesDetails[index]['id'],
-                    //             limitCityNPlacesDetails[index]['cityID'],
-                    //           ]
-                    //       ),
-                    //     ));
-                  },
-                  child: Text(
-                    'Save plan',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    onPrimary: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5.0),
+                      if(saved == false) {
+                        await FirebaseFirestore.instance.collection('users')
+                            .doc(userdata23[4])
+                            .collection('userPlans')
+                            .add({
+                          'Data': designedData,
+                          "userID": userdata23[4],
+                          'title': widget.planName,
+                          'Generated': 'true',
+                          'imgUrl': designedData[0]['Place 1']['img'],
+                        }).then((value) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text('Plan Saved successfully'),
+                              content: Text('the plan saved successfully, u can access it in Profile => My plans'),
+                              actions: [
+                                TextButton(
+                                  child: Text('OK'),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    setState(() {
+
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        }).catchError((err) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text('Saving failed'),
+                              content: Text('the plan not saved, try again later'),
+                              actions: [
+                                TextButton(
+                                  child: Text('OK'),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    setState(() {
+
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        });
+                        setState(() {
+                          saved = true;
+                        });
+                      }
+                      else{
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text('Plan already saved'),
+                            content: Text('the plan is already saved, u can access it in Profile => My plans'),
+                            actions: [
+                              TextButton(
+                                child: Text('OK'),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  setState(() {
+
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+
+
+                      // Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //       builder: (context) => const FamousePlacesDetails(),
+                      //       settings: RouteSettings(
+                      //           arguments: [
+                      //             limitCityNPlacesDetails[index]['id'],
+                      //             limitCityNPlacesDetails[index]['cityID'],
+                      //           ]
+                      //       ),
+                      //     ));
+                    },
+                    child: !saved?Text('Save plan',
+                      style: TextStyle(
+                          fontSize: 20
+                      ),
+                    ):Text('Saved',
+                      style: TextStyle(
+                          fontSize: 20
+                      ),
+                    ),
+                    style: !saved?ElevatedButton.styleFrom(
+                      onPrimary: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                        BorderRadius.circular(5.0),
+                      ),
+                    ):
+                    ElevatedButton.styleFrom(
+                      onPrimary: Color.fromRGBO(
+                          249, 168, 38, 1),
+                      primary: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                        BorderRadius.circular(5.0),
+                      ),
                     ),
                   ),
                 ),

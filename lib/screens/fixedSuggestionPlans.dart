@@ -179,15 +179,6 @@ class _fixedSuggestionPlansState extends State<fixedSuggestionPlans>
 
   @override
   Widget build(BuildContext context) {
-    print('////////////////////////');
-    log(widget.planDetail.toString());
-    // log(widget.planDetail['places']['1']['distance']['text'].toString());
-    // log(widget.planDetail['places']['1']['duration']['text'].toString());
-    print('////////////////////////');
-    // for(int i = 1 ; i<= widget.planDetail['places'].length; i++){
-    //   log(widget.planDetail['places']['$i'].toString());
-    // }
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -593,6 +584,7 @@ class _fixedSuggestionPlansState extends State<fixedSuggestionPlans>
                                 'id': widget.planDetail['id'],
                                 'planID': widget.planDetail['planID'],
                                 'UserID': user.uid,
+                                'Generated': 'false'
                               }
                             ).then((value) {
                               showDialog(

@@ -28,6 +28,7 @@ class _Show_MapsState extends State<Show_Maps> with WidgetsBindingObserver {
   FloatingSearchBarController fController = FloatingSearchBarController();
   bool showLocationButton = true;
   bool showGetDirection = false;
+  bool showStartMoving = false;
   bool showCancel = false;
   bool showDistanceAndDuration = false;
   final TextEditingController searchText = TextEditingController();
@@ -145,125 +146,80 @@ class _Show_MapsState extends State<Show_Maps> with WidgetsBindingObserver {
                   });
                 }
               }
-              return Stack(
-                fit: StackFit.expand,
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  position != null
-                      ? GoogleMap(
-                          mapToolbarEnabled: false,
-                          rotateGesturesEnabled: true,
-                          zoomControlsEnabled: false,
-                          myLocationEnabled: true,
-                          myLocationButtonEnabled: false,
-                          mapType: MapType.normal,
-                          initialCameraPosition: _myCameraPosition,
-                          onMapCreated: (GoogleMapController controller) {
-                            _controller.complete(controller);
-                          },
-                          polylines: {
-                            if (_info != null)
-                              Polyline(
-                                polylineId: PolylineId('sadasd'),
-                                color: Colors.red,
-                                width: 5,
-                                points: _info!.polylinePoints
-                                    .map((e) => LatLng(e.latitude, e.longitude))
-                                    .toList(),
-                              ),
-                          },
-                          markers: {
-                            if (origin != null) origin!,
-                            if (destination != null) destination!,
-                          },
-                        )
-                      : permission == true
-                          ? const Center(
-                              child: CircularProgressIndicator(
-                                color: Color.fromRGBO(249, 168, 38, 1),
-                              ),
-                            )
-                          : Column(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Text(
-                                    'Location service is denied pls change it in settings'),
-                                ElevatedButton(
-                                    onPressed: () async {
-                                      await Geolocator.openLocationSettings();
-                                    },
-                                    child: const Text('press')),
-                                const Text(
-                                    'After u opened setting, Press refresh'),
-                                ElevatedButton(
-                                    onPressed: () async {
-                                      getMyLocation();
-                                    },
-                                    child: const Text('Refresh')),
-                              ],
-                            ),
-                  buildFloatingSearchBar(),
-                  Align(
-                    alignment: Alignment(0, 0.5),
-                    child: Row(
+                  Expanded(
+                    child: Stack(
+                      fit: StackFit.expand,
                       children: [
-                        Visibility(
-                          visible: showGetDirection,
-                          child: Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: ElevatedButton(
-                                  onPressed: () async {
-                                    showGetDirection = false;
-                                    final direction;
-                                    if (origin != null && destination != null) {
-                                      direction = await DirectionsRepo()
-                                          .getDirections(
-                                              origin: origin!.position,
-                                              destination:
-                                                  destination!.position);
-                                    } else {
-                                      direction = null;
-                                    }
-                                    _info = direction;
-                                    await polylineCamera();
-                                    setState(() {
-                                      showCancel = true;
-                                    });
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Color.fromRGBO(249, 168, 38, 1.0),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
+                        position != null
+                            ? GoogleMap(
+                                mapToolbarEnabled: false,
+                                rotateGesturesEnabled: true,
+                                zoomControlsEnabled: false,
+                                myLocationEnabled: true,
+                                myLocationButtonEnabled: false,
+                                mapType: MapType.normal,
+                                initialCameraPosition: _myCameraPosition,
+                                onMapCreated: (GoogleMapController controller) {
+                                  _controller.complete(controller);
+                                },
+                                polylines: {
+                                  if (_info != null)
+                                    Polyline(
+                                      polylineId: PolylineId('sadasd'),
+                                      color: Colors.red,
+                                      width: 5,
+                                      points: _info!.polylinePoints
+                                          .map((e) => LatLng(e.latitude, e.longitude))
+                                          .toList(),
                                     ),
-                                  ),
-                                  child: Text('Get Direction')),
-                            ),
-                          ),
-                        ),
-                        Visibility(
-                          visible: showCancel,
-                          child: Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: ElevatedButton(
-                                  onPressed: () async {
-                                    setState(() {
-                                      _info = null;
-                                      origin = null;
-                                      destination = null;
-                                      showGetDirection = false;
-                                      showCancel = false;
-                                    });
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                      side: const BorderSide(width: 1),
+                                },
+                                markers: {
+                                  if (origin != null) origin!,
+                                  if (destination != null) destination!,
+                                },
+                              )
+                            : permission == true
+                                ? const Center(
+                                    child: CircularProgressIndicator(
+                                      color: Color.fromRGBO(249, 168, 38, 1),
                                     ),
+                                  )
+                                : Column(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Text(
+                                          'Location service is denied pls change it in settings'),
+                                      ElevatedButton(
+                                          onPressed: () async {
+                                            await Geolocator.openLocationSettings();
+                                          },
+                                          child: const Text('press')),
+                                      const Text(
+                                          'After u opened setting, Press refresh'),
+                                      ElevatedButton(
+                                          onPressed: () async {
+                                            getMyLocation();
+                                          },
+                                          child: const Text('Refresh')),
+                                    ],
                                   ),
-                                  child: Text('Cancel')),
+                        buildFloatingSearchBar(),
+
+
+                        Align(
+                          alignment: Alignment(0.95, 0.99),
+                          child: Visibility(
+                            visible: showLocationButton,
+                            child: FloatingActionButton(
+                              backgroundColor: const Color.fromRGBO(249, 168, 38, 1.0),
+                              onPressed: () {
+                                goToMyCurrLocation();
+                              },
+                              child: const Icon(Icons.gps_fixed),
                             ),
                           ),
                         ),
@@ -273,39 +229,118 @@ class _Show_MapsState extends State<Show_Maps> with WidgetsBindingObserver {
                   if (_info != null)
                     Visibility(
                       visible: showDistanceAndDuration,
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: MediaQuery.of(context).size.height*0.15
-                          ),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 6.0,
-                              horizontal: 12.0,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.yellowAccent,
-                              borderRadius: BorderRadius.circular(20.0),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Colors.black26,
-                                  offset: Offset(0, 2),
-                                  blurRadius: 6.0,
-                                )
-                              ],
-                            ),
-                            child: Text(
-                              '${_info!.totalDistance}, ${_info!.totalDuration}',
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                            vertical: MediaQuery.of(context).size.height*0.01,
+                            horizontal: MediaQuery.of(context).size.width*0.05
+                        ),
+                        child: Row(
+                          children: [
+                            Text(
+                              '${_info!.totalDistance}, ${_info!.totalDuration} by',
                               style: const TextStyle(
                                 fontSize: 18.0,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                          ),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width*0.02,
+                            ),
+                            Icon(
+                              Icons.directions_car,
+                            ),
+                          ],
                         ),
                       ),
                     ),
+                  Row(
+                    children: [
+                      Visibility(
+                        visible: showGetDirection,
+                        child: Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: ElevatedButton(
+                                onPressed: () async {
+                                  showGetDirection = false;
+                                  showStartMoving = true;
+                                  final direction;
+                                  if (origin != null && destination != null) {
+                                    direction = await DirectionsRepo()
+                                        .getDirections(
+                                        origin: origin!.position,
+                                        destination:
+                                        destination!.position);
+                                  } else {
+                                    direction = null;
+                                  }
+                                  _info = direction;
+                                  await polylineCamera();
+                                  setState(() {
+                                    showCancel = true;
+                                  });
+
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  primary: Color.fromRGBO(249, 168, 38, 1.0),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                ),
+                                child: Text('Get Direction')),
+                          ),
+                        ),
+                      ),
+                      Visibility(
+                        visible: showStartMoving,
+                        child: Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: ElevatedButton(
+                                onPressed: () async {
+                                  launchInBrowser(
+                                      Uri.parse('https://www.google.com/maps/dir/${destination!.position.latitude},${destination!.position.longitude}/${origin!.position.latitude},${origin!.position.longitude}')
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  primary: Color.fromRGBO(249, 168, 38, 1.0),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                ),
+                                child: Text('Start Moving')),
+                          ),
+                        ),
+                      ),
+                      Visibility(
+                        visible: showCancel,
+                        child: Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: ElevatedButton(
+                                onPressed: () async {
+                                  setState(() {
+                                    _info = null;
+                                    origin = null;
+                                    destination = null;
+                                    showGetDirection = false;
+                                    showCancel = false;
+                                    showStartMoving = false;
+                                  });
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  primary: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    side: const BorderSide(width: 1),
+                                  ),
+                                ),
+                                child: Text('Cancel')),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               );
             }
@@ -313,16 +348,6 @@ class _Show_MapsState extends State<Show_Maps> with WidgetsBindingObserver {
               child: CircularProgressIndicator(),
             );
           }),
-      floatingActionButton: Visibility(
-        visible: showLocationButton,
-        child: FloatingActionButton(
-          backgroundColor: const Color.fromRGBO(249, 168, 38, 1.0),
-          onPressed: () {
-            goToMyCurrLocation();
-          },
-          child: const Icon(Icons.gps_fixed),
-        ),
-      ),
     );
   }
 
@@ -337,11 +362,19 @@ class _Show_MapsState extends State<Show_Maps> with WidgetsBindingObserver {
           showLocationButton = false;
           showDistanceAndDuration = false;
           showGetDirection = false;
+          showStartMoving = false;
+          showCancel = false;
         } else {
           showLocationButton = true;
           showDistanceAndDuration = true;
+          showCancel = true;
           if (origin != null && destination != null) {
-            showGetDirection = true;
+            if(_info != null){
+              showStartMoving = true;
+            }
+            else{
+              showGetDirection = true;
+            }
           }
         }
         setState(() {});
@@ -465,7 +498,22 @@ class _Show_MapsState extends State<Show_Maps> with WidgetsBindingObserver {
                                             infoWindow: InfoWindow(
                                                 title:
                                                     '${filterResult[index]['name']}',
-                                                snippet: 'asd'));
+                                                snippet: 'Click to preview',
+                                              onTap: (){
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) => FamousePlacesDetails(),
+                                                        settings: RouteSettings(
+                                                          arguments: [
+                                                            filterResult[index]['id'],
+                                                            filterResult[index]['cityID'],
+                                                          ],
+                                                        )
+                                                    ));
+                                              }
+                                            )
+                                        );
 
                                         destination = Marker(
                                             markerId: const MarkerId('des'),
@@ -476,8 +524,23 @@ class _Show_MapsState extends State<Show_Maps> with WidgetsBindingObserver {
                                                     ['coordinates'][1]),
                                             infoWindow: InfoWindow(
                                                 title:
-                                                    '${filterResult[index]['name']}',
-                                                snippet: 'asd'));
+                                                '${filterResult[index]['name']}',
+                                                snippet: 'Click to preview',
+                                                onTap: (){
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) => FamousePlacesDetails(),
+                                                          settings: RouteSettings(
+                                                            arguments: [
+                                                              filterResult[index]['id'],
+                                                              filterResult[index]['cityID'],
+                                                            ],
+                                                          )
+                                                      ));
+                                                }
+                                            )
+                                        );
 
                                         _info = null;
 

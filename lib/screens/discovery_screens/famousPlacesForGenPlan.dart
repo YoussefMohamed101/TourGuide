@@ -230,33 +230,50 @@ class _famousPlacesForGenPlanState extends State<famousPlacesForGenPlan> {
 
 
 
-                                                    if(PlacesList.any((item) => item['id'] == Places[index]['id']) == false && PlacesList.length < 3 * int.parse(planDetails[1]) ){
-                                                      PlacesList.add({
-                                                        'id' : Places[index]['id'],
-                                                        'name': Places[index]['name'],
-                                                        'img': Places[index]['imgURL'],
-                                                        'coordinates': Places[index]['coordinates'],
-                                                        'timesOfWork': Places[index]['timesOfWork'],
-                                                        'information': Places[index]['information'],
-                                                      });
-                                                    }
-                                                    else if(PlacesList.any((item) => item['id'] == Places[index]['id']) == false && PlacesList.length == (3 * int.parse(planDetails[1]))){
-                                                      showDialog(
-                                                        context: context,
-                                                        builder: (context) => AlertDialog(
-                                                          title: Text('Maximum picked sites reached'),
-                                                          content: Text('You can select only 3 sites per day'),
-                                                          actions: [
-                                                            TextButton(
-                                                              child: Text('OK'),
-                                                              onPressed: () => Navigator.pop(context),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      );
+                                                    if(planDetails[3] == 'Automatic'){
+                                                      if(PlacesList.any((item) => item['id'] == Places[index]['id']) == false && PlacesList.length < 3 * int.parse(planDetails[1]) ){
+                                                        PlacesList.add({
+                                                          'id' : Places[index]['id'],
+                                                          'name': Places[index]['name'],
+                                                          'img': Places[index]['imgURL'],
+                                                          'coordinates': Places[index]['coordinates'],
+                                                          'timesOfWork': Places[index]['timesOfWork'],
+                                                          'information': Places[index]['information'],
+                                                        });
+                                                      }
+                                                      else if(PlacesList.any((item) => item['id'] == Places[index]['id']) == false && PlacesList.length == (3 * int.parse(planDetails[1]))){
+                                                        showDialog(
+                                                          context: context,
+                                                          builder: (context) => AlertDialog(
+                                                            title: Text('Maximum picked sites reached'),
+                                                            content: Text('You can select only 3 sites per day'),
+                                                            actions: [
+                                                              TextButton(
+                                                                child: Text('OK'),
+                                                                onPressed: () => Navigator.pop(context),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        );
+                                                      }
+                                                      else{
+                                                        PlacesList.removeWhere((item) => item['id'] == Places[index]['id']);
+                                                      }
                                                     }
                                                     else{
-                                                      PlacesList.removeWhere((item) => item['id'] == Places[index]['id']);
+                                                      if(PlacesList.any((item) => item['id'] == Places[index]['id']) == false){
+                                                        PlacesList.add({
+                                                          'id' : Places[index]['id'],
+                                                          'name': Places[index]['name'],
+                                                          'img': Places[index]['imgURL'],
+                                                          'coordinates': Places[index]['coordinates'],
+                                                          'timesOfWork': Places[index]['timesOfWork'],
+                                                          'information': Places[index]['information'],
+                                                        });
+                                                      }
+                                                      else{
+                                                        PlacesList.removeWhere((item) => item['id'] == Places[index]['id']);
+                                                      }
                                                     }
                                                     setState(() {
 

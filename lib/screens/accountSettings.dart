@@ -212,7 +212,15 @@ class _accountSettingsState extends State<accountSettings> {
     _lastNameTextController.text = userdata23[1];
     return Scaffold(
       appBar: AppBar(
-
+        leading: IconButton(
+            onPressed: () {
+              PlacesList = [];
+              Navigator.pop(context);
+            },
+            icon: const Icon(
+              Icons.keyboard_arrow_left,
+              size: 45,
+            )),
       ),
       body: Container(
         width: double.infinity,

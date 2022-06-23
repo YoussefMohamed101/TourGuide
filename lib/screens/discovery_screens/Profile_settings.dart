@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:untitled2/auth/secrets.dart';
+import 'package:untitled2/screens/aboutUsPage.dart';
 import 'package:untitled2/screens/accountSettings.dart';
 import 'package:untitled2/screens/myPlans.dart';
 import 'package:untitled2/screens/signinAndSignup/Register.dart';
@@ -276,126 +277,6 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                               child: Row(
                                 children: [
                                   const Icon(
-                                    Icons.settings,
-                                    size: 30,
-                                    // color: Color.fromRGBO(249, 168, 38, 1),
-                                  ),
-                                  SizedBox(
-                                    width: MediaQuery
-                                        .of(context)
-                                        .size
-                                        .width * 0.05,
-                                  ),
-                                  const Text(
-                                    'Settings',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox.expand(
-                              child: Material(
-                                  type: MaterialType.transparency,
-                                  child: InkWell(
-                                    onTap: () {},
-                                  )),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: MediaQuery
-                          .of(context)
-                          .size
-                          .height * 0.02,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: MediaQuery
-                            .of(context)
-                            .size
-                            .width * 0.02,
-                      ),
-                      child: SizedBox(
-                        height: MediaQuery
-                            .of(context)
-                            .size
-                            .height * 0.045,
-                        child: Stack(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.only(
-                                bottom: MediaQuery
-                                    .of(context)
-                                    .size
-                                    .height * 0.01,
-                              ),
-                              child: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.notifications_none_outlined,
-                                    size: 30,
-                                    // color: Color.fromRGBO(249, 168, 38, 1),
-                                  ),
-                                  SizedBox(
-                                    width: MediaQuery
-                                        .of(context)
-                                        .size
-                                        .width * 0.05,
-                                  ),
-                                  const Text(
-                                    'Notifications',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox.expand(
-                              child: Material(
-                                  type: MaterialType.transparency,
-                                  child: InkWell(
-                                    onTap: () {},
-                                  )),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: MediaQuery
-                          .of(context)
-                          .size
-                          .height * 0.02,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: MediaQuery
-                            .of(context)
-                            .size
-                            .width * 0.02,
-                      ),
-                      child: SizedBox(
-                        height: MediaQuery
-                            .of(context)
-                            .size
-                            .height * 0.045,
-                        child: Stack(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.only(
-                                bottom: MediaQuery
-                                    .of(context)
-                                    .size
-                                    .height * 0.01,
-                              ),
-                              child: Row(
-                                children: [
-                                  const Icon(
                                     Icons.info_outline,
                                     size: 30,
                                     // color: Color.fromRGBO(249, 168, 38, 1),
@@ -407,7 +288,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                         .width * 0.05,
                                   ),
                                   const Text(
-                                    'About App',
+                                    'About App and help',
                                     style: TextStyle(
                                       fontSize: 18,
                                     ),
@@ -419,78 +300,20 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                               child: Material(
                                   type: MaterialType.transparency,
                                   child: InkWell(
-                                    onTap: () {},
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => aboutUsPage(),
+                                        ),
+                                      );
+                                    },
                                   )),
                             ),
                           ],
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: MediaQuery
-                          .of(context)
-                          .size
-                          .height * 0.02,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: MediaQuery
-                            .of(context)
-                            .size
-                            .width * 0.02,
-                      ),
-                      child: SizedBox(
-                        height: MediaQuery
-                            .of(context)
-                            .size
-                            .height * 0.045,
-                        child: Stack(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.only(
-                                bottom: MediaQuery
-                                    .of(context)
-                                    .size
-                                    .height * 0.01,
-                              ),
-                              child: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.help_outline,
-                                    size: 30,
-                                    // color: Color.fromRGBO(249, 168, 38, 1),
-                                  ),
-                                  SizedBox(
-                                    width: MediaQuery
-                                        .of(context)
-                                        .size
-                                        .width * 0.05,
-                                  ),
-                                  const Text(
-                                    'Help',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox.expand(
-                              child: Material(
-                                  type: MaterialType.transparency,
-                                  child: InkWell(
-                                    onTap: () {},
-                                  )),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    // Expanded(
-                    //   child: SizedBox(
-                    //     height: MediaQuery.of(context).size.height*0.2,
-                    //   ),
-                    // ),
                     Padding(
                       padding: EdgeInsets.symmetric(
                         horizontal: MediaQuery
