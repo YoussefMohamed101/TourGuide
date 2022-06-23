@@ -703,23 +703,69 @@ class _generatePlanFormState extends State<generatePlanForm> {
                               id = 'wsnG3ogBp0QVaOLn1RlV';
                             }
                             firstGenPlanEnter = true;
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => suggestionPlanMap(
-                                      savedPlan: false,
-                                      planName : planName.text,
-                                      cityid: id,
-                                      numberOfSights: 3 * int.parse(selectedNumOfDays!),
-                                      numofDays: int.parse(selectedNumOfDays!),
-                                      day: selectedStartDay,SortType: selectedSortType!,
-                                      StartPoint: selectedStartPoint!,
-                                      pickedPlaces: selectedSelectedPlaces!),
-                                )
-                            );
+                            if(selectedSelectedPlaces == 'Choose Places'){
+                              if(PlacesList.length != 0) {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          suggestionPlanMap(
+                                              savedPlan: false,
+                                              planName: planName.text,
+                                              cityid: id,
+                                              numberOfSights: 3 *
+                                                  int.parse(selectedNumOfDays!),
+                                              numofDays: int.parse(
+                                                  selectedNumOfDays!),
+                                              day: selectedStartDay,
+                                              SortType: selectedSortType!,
+                                              StartPoint: selectedStartPoint!,
+                                              pickedPlaces: selectedSelectedPlaces!),
+                                    )
+                                );
+                              }
+                              else{
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: Text('Added places is 0'),
+                                    content: Text('You should pick at least 1 place'),
+                                    actions: [
+                                      TextButton(
+                                        child: Text('OK'),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                          setState(() {
+
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              };
+                            }
+                            else{
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        suggestionPlanMap(
+                                            savedPlan: false,
+                                            planName: planName.text,
+                                            cityid: id,
+                                            numberOfSights: 3 *
+                                                int.parse(selectedNumOfDays!),
+                                            numofDays: int.parse(
+                                                selectedNumOfDays!),
+                                            day: selectedStartDay,
+                                            SortType: selectedSortType!,
+                                            StartPoint: selectedStartPoint!,
+                                            pickedPlaces: selectedSelectedPlaces!),
+                                  )
+                              );
+                            }
                           }
-                          print('44444444444444444444444444444444444444444');
-                          print(planName.text);
                         },
                         child: const Text(
                           'Generate Plan',
