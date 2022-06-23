@@ -422,25 +422,6 @@ class _myPlansState extends State<myPlans> {
                                                     ),
                                                   ),
                                                   onPressed: () async {
-                                                    if(snapshot.data.docs[index].data()['Generated'] == 'true'){
-                                                      await FirebaseFirestore.instance
-                                                          .collection('users')
-                                                          .doc(userdata23[4])
-                                                          .collection('userPlans').where('title',isEqualTo: '${snapshot.data.docs[index].data()['title']}')
-                                                          .get()
-                                                          .then((value) async {
-                                                        for(var item in value.docs){
-                                                          await FirebaseFirestore.instance
-                                                              .collection('users')
-                                                              .doc(userdata23[4])
-                                                              .collection('userPlans')
-                                                              .doc(item.id)
-                                                              .delete();
-                                                        }
-
-                                                      });
-                                                    }
-                                                    else{
                                                         await FirebaseFirestore.instance
                                                             .collection('users')
                                                             .doc(userdata23[4])
@@ -458,7 +439,6 @@ class _myPlansState extends State<myPlans> {
                                                           }
 
                                                         });
-                                                    }
                                                   },
                                                   child: Text('Delete'),
                                                 ),

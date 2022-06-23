@@ -337,53 +337,131 @@ class _generatePlanFormState extends State<generatePlanForm> {
                         ),
                       ],
                     ):
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    Row(
                       children: [
-                        Text(
-                          "Starting Day",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Number Of Days",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                  'Number of days is gonna be based on number of places you select',
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
                           ),
                         ),
                         SizedBox(
-                          height: 10,
+                          width: 20,
                         ),
-                        Container(
-                          width: MediaQuery.of(context).size.width*0.44,
-                          decoration: BoxDecoration(
-                              border: Border.all(),
-                              borderRadius: BorderRadius.circular(10)
-                          ),
-                          padding: EdgeInsets.only(
-                            left: 10,
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              value: selectedStartDay,
-                              items: StartDayItems
-                                  .map<DropdownMenuItem<String>>((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(
-                                    value,
-                                    style: TextStyle(fontSize: 20),
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Starting Day",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Container(
+                                width: MediaQuery.of(context).size.width*0.44,
+                                decoration: BoxDecoration(
+                                    border: Border.all(),
+                                    borderRadius: BorderRadius.circular(10)
+                                ),
+                                padding: EdgeInsets.only(
+                                  left: 10,
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton<String>(
+                                    value: selectedStartDay,
+                                    items: StartDayItems
+                                        .map<DropdownMenuItem<String>>((String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(
+                                          value,
+                                          style: TextStyle(fontSize: 20),
+                                        ),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        selectedStartDay = newValue!;
+                                        PlacesList.clear();
+                                      });
+                                    },
                                   ),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  selectedStartDay = newValue!;
-                                  PlacesList.clear();
-                                });
-                              },
-                            ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
+                    // Column(
+                    //   mainAxisAlignment: MainAxisAlignment.start,
+                    //   crossAxisAlignment: CrossAxisAlignment.start,
+                    //   children: [
+                    //     Text(
+                    //       "Starting Day",
+                    //       style: TextStyle(
+                    //         fontSize: 20,
+                    //         fontWeight: FontWeight.w600,
+                    //       ),
+                    //     ),
+                    //     SizedBox(
+                    //       height: 10,
+                    //     ),
+                    //     Container(
+                    //       width: MediaQuery.of(context).size.width*0.44,
+                    //       decoration: BoxDecoration(
+                    //           border: Border.all(),
+                    //           borderRadius: BorderRadius.circular(10)
+                    //       ),
+                    //       padding: EdgeInsets.only(
+                    //         left: 10,
+                    //       ),
+                    //       child: DropdownButtonHideUnderline(
+                    //         child: DropdownButton<String>(
+                    //           value: selectedStartDay,
+                    //           items: StartDayItems
+                    //               .map<DropdownMenuItem<String>>((String value) {
+                    //             return DropdownMenuItem<String>(
+                    //               value: value,
+                    //               child: Text(
+                    //                 value,
+                    //                 style: TextStyle(fontSize: 20),
+                    //               ),
+                    //             );
+                    //           }).toList(),
+                    //           onChanged: (String? newValue) {
+                    //             setState(() {
+                    //               selectedStartDay = newValue!;
+                    //               PlacesList.clear();
+                    //             });
+                    //           },
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                     SizedBox(height: 10,),
                     Text(
                       "Pick Places",
@@ -640,6 +718,8 @@ class _generatePlanFormState extends State<generatePlanForm> {
                                 )
                             );
                           }
+                          print('44444444444444444444444444444444444444444');
+                          print(planName.text);
                         },
                         child: const Text(
                           'Generate Plan',

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:developer';
+import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:custom_marker/marker_icon.dart';
@@ -82,6 +83,13 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
   List designedData = [];
   bool saved = false;
   bool showSavePlanButton = true;
+
+
+  String _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+  Random _rnd = Random();
+
+  String getRandomString(int length) => String.fromCharCodes(Iterable.generate(
+      length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
 
   Future<void> getCityLocation() async {
     await SortPlacesByDistanceAndOpeningTime();
@@ -280,7 +288,7 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
           'coordinates' : limitCityNPlacesDetails[i]['coordinates'],
         },
         'coordinates': [30.00935956528337, 31.199082360667852],
-        'id': limitCityNPlacesDetails[0]['cityID'],
+        'id': widget.cityid,
       });
     }
 
@@ -1562,15 +1570,18 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
                       // print(coordinates);
 
                       if(saved == false) {
+                        String planId = getRandomString(20);
                         await FirebaseFirestore.instance.collection('users')
                             .doc(userdata23[4])
                             .collection('userPlans')
-                            .add({
+                        .doc(planId)
+                            .set({
                           'Data': designedData,
                           "userID": userdata23[4],
-                          'title': widget.planName,
+                          'title': widget.planName.length != 0? widget.planName: 'Generated plan',
                           'Generated': 'true',
                           'imgUrl': designedData[0]['Place 1']['img'],
+                          'planID' : planId,
                         }).then((value) {
                           showDialog(
                             context: context,
@@ -1613,6 +1624,8 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
                         setState(() {
                           saved = true;
                         });
+
+
                       }
                       else{
                         showDialog(
@@ -1694,3 +1707,5 @@ class _suggestionPlanMapState extends State<suggestionPlanMap>
     return li;
   }
 }
+
+
