@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -27,9 +26,7 @@ class _RegisterState extends State<Register> {
   File? _image;
   XFile? photo;
   File? imageTemporary;
-  //late final savedImage;
   String? fileName;
-  //late var imageurl;
   Future getImagefromcamera() async {
     photo = await ImagePicker().pickImage(source: ImageSource.camera,imageQuality: 25);
     imageTemporary = File(photo!.path);
@@ -64,7 +61,8 @@ class _RegisterState extends State<Register> {
       TextEditingController();
   final TextEditingController _signUpPasstextController =
       TextEditingController();
-  final TextEditingController _nametextController = TextEditingController();
+  final TextEditingController _firstnametextController = TextEditingController();
+  final TextEditingController _lastnametextController = TextEditingController();
 
   bool isLoading = false; //set loading to false
 
@@ -122,6 +120,7 @@ class _RegisterState extends State<Register> {
     Timer.periodic(const Duration(seconds: 1), (t) async {
       if(sign){
         await auth.sendEmailVerification();
+        await FirebaseAuth.instance.signOut();
       }
       setState(() {
         if (sign) {
@@ -135,9 +134,6 @@ class _RegisterState extends State<Register> {
                   child: Text('OK'),
                   onPressed: () {
                     setState(() {
-                      // Navigator.of(context).pushAndRemoveUntil(
-                      //     MaterialPageRoute(builder: (context) => Cupertinolayout()),
-                      //         (Route<dynamic> route) => false);
                       Navigator.pop(context);
                       isSignIn = true;
                       isLoading = false;
@@ -169,12 +165,7 @@ class _RegisterState extends State<Register> {
       t.cancel(); //stops the timer
     });
   }
-  @override
-  void initState() {
-    // TODO: implement initState
-    FirebaseAuth.instance.signOut();
-    super.initState();
-  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -183,6 +174,7 @@ class _RegisterState extends State<Register> {
           automaticallyImplyLeading: false,
           systemOverlayStyle: const SystemUiOverlayStyle(
             statusBarIconBrightness: Brightness.dark,
+            statusBarColor: Colors.transparent,
           ),
         ),
         body: Container(
@@ -423,8 +415,8 @@ class _RegisterState extends State<Register> {
                                 onPressed: () async {
                                   if (_loginKey.currentState!.validate()) {
                                     bool signedIn = await auth.signIn(
-                                        _loginEmailtextController.text,
-                                        _loginPasstextController.text);
+                                        _loginEmailtextController.text.trim(),
+                                        _loginPasstextController.text.trim());
                                     setState(() {
                                       isLoading = true;
                                       _signInStartTimer(signedIn);
@@ -458,35 +450,6 @@ class _RegisterState extends State<Register> {
                                 height:
                                     MediaQuery.of(context).size.height * 0.04,
                               ),
-                              const Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  "Or sign up with",
-                                  style: TextStyle(fontSize: 20),
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 30.0,
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                //Center Row contents horizontally,
-                                children: [
-                                  MaterialButton(
-                                    onPressed: () {},
-                                    child: const Icon(Icons.facebook),
-                                    shape: const CircleBorder(),
-                                    height: 50,
-                                    minWidth: 50,
-                                    color:
-                                        const Color.fromRGBO(249, 168, 38, 1),
-                                    textColor: Colors.white,
-                                  ),
-                                  const SizedBox(
-                                    width: 15,
-                                  ),
-                                ],
-                              )
                             ],
                           ),
                         )
@@ -611,40 +574,76 @@ class _RegisterState extends State<Register> {
                                 height:
                                     MediaQuery.of(context).size.height * 0.01,
                               ),
-                              TextFormField(
-                                controller: _nametextController,
-                                onChanged: (val) {
-                                  // name = val;
-                                },
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return "Field is Required";
-                                  }
-                                  return null;
-                                },
-                                decoration: const InputDecoration(
-                                    /*border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10)),*/
-                                    prefixIcon: Icon(
-                                      Icons.person,
-                                      color: Colors.black,
-                                      size: 30,
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: TextFormField(
+                                      controller: _firstnametextController,
+                                      onChanged: (val) {
+                                        // name = val;
+                                      },
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return "Field is Required";
+                                        }
+                                        return null;
+                                      },
+                                      decoration: const InputDecoration(
+                                          /*border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10)),*/
+                                          prefixIcon: Icon(
+                                            Icons.person,
+                                            color: Colors.black,
+                                            size: 30,
+                                          ),
+                                          labelText: "First Name",
+                                          labelStyle: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black),
+                                          fillColor: Colors.white,
+                                          filled: true),
+                                      style: const TextStyle(
+                                          fontSize: 18, fontWeight: FontWeight.bold),
+                                      textAlign: TextAlign.left,
+                                      keyboardType: TextInputType.name,
                                     ),
-                                    labelText: "Name",
-                                    labelStyle: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black),
-                                    hintText: "Enter your Name",
-                                    hintStyle: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
-                                    fillColor: Colors.white,
-                                    filled: true),
-                                style: const TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.left,
-                                keyboardType: TextInputType.name,
+                                  ),
+                                  SizedBox(width: 20,),
+                                  Expanded(
+                                    child: TextFormField(
+                                      controller: _lastnametextController,
+                                      onChanged: (val) {
+                                        // name = val;
+                                      },
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return "Field is Required";
+                                        }
+                                        return null;
+                                      },
+                                      decoration: const InputDecoration(
+                                          /*border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10)),*/
+                                          prefixIcon: Icon(
+                                            Icons.person,
+                                            color: Colors.black,
+                                            size: 30,
+                                          ),
+                                          labelText: "Last Name",
+                                          labelStyle: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black),
+                                          fillColor: Colors.white,
+                                          filled: true),
+                                      style: const TextStyle(
+                                          fontSize: 18, fontWeight: FontWeight.bold),
+                                      textAlign: TextAlign.left,
+                                      keyboardType: TextInputType.name,
+                                    ),
+                                  ),
+                                ],
                               ),
                               SizedBox(
                                 height:
@@ -652,9 +651,6 @@ class _RegisterState extends State<Register> {
                               ),
                               TextFormField(
                                 controller: _signUpEmailtextController,
-                                onChanged: (val) {
-                                  // email = val;
-                                },
                                 validator: (value) {
                                   if (value!.isEmpty) {
                                     return "Feild is Required";
@@ -696,9 +692,6 @@ class _RegisterState extends State<Register> {
                               ),
                               TextFormField(
                                 controller: _signUpPasstextController,
-                                onChanged: (val) {
-                                  // pass = val;
-                                },
                                 validator: (value) {
                                   if (value!.isEmpty) {
                                     return "Feild is Required";
@@ -757,9 +750,10 @@ class _RegisterState extends State<Register> {
                                     });
 
                                     bool signedup = await auth.signUp(
-                                        _signUpEmailtextController.text,
-                                        _signUpPasstextController.text,
-                                        _nametextController.text,
+                                        _signUpEmailtextController.text.trim(),
+                                        _signUpPasstextController.text.trim(),
+                                        _firstnametextController.text.trim(),
+                                        _lastnametextController.text.trim(),
                                         fileName,
                                         imageTemporary,
                                     );
@@ -793,36 +787,6 @@ class _RegisterState extends State<Register> {
                                 height:
                                     MediaQuery.of(context).size.height * 0.03,
                               ),
-                              const Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  "Or sign up with",
-                                  style: TextStyle(fontSize: 20),
-                                ),
-                              ),
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.03,
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                //Center Row contents horizontally,
-                                children: [
-                                  MaterialButton(
-                                    onPressed: () {},
-                                    child: const Icon(Icons.facebook),
-                                    shape: const CircleBorder(),
-                                    height: 50,
-                                    minWidth: 50,
-                                    color:
-                                        const Color.fromRGBO(249, 168, 38, 1),
-                                    textColor: Colors.white,
-                                  ),
-                                  const SizedBox(
-                                    width: 15,
-                                  ),
-                                ],
-                              ),
                             ],
                           ),
                         ),
@@ -833,609 +797,3 @@ class _RegisterState extends State<Register> {
         ));
   }
 }
-
-// Widget buildSheet() => Container(
-//   child:Row(
-//     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//     children: <Widget>[
-//       FloatingActionButton(
-//         backgroundColor: Color.fromRGBO(249, 168, 38, 1),
-//         onPressed: getImagefromcamera,
-//         tooltip: "Pick Image form gallery",
-//         child: Icon(Icons.add_a_photo),
-//       ),
-//       FloatingActionButton(
-//         backgroundColor: Color.fromRGBO(249, 168, 38, 1),
-//         onPressed: getImagefromGallery,
-//         tooltip: "Pick Image from camera",
-//         child: Icon(Icons.camera_alt),
-//       )
-//     ],
-//   ),
-// );
-
-// class FadeAnimation extends StatelessWidget {
-//   final double delay;
-//   final Widget child;
-//
-//   FadeAnimation(this.delay, this.child);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     final tween = MultiTrackTween([
-//       Track("opacity")
-//           .add(Duration(milliseconds: 500), Tween(begin: 0.0, end: 1.0)),
-//       Track("translateY").add(
-//           Duration(milliseconds: 500), Tween(begin: -30.0, end: 0.0),
-//           curve: Curves.easeOut)
-//     ]);
-//
-//     return ControlledAnimation(
-//       delay: Duration(milliseconds: (500 * delay).round()),
-//       duration: tween.duration,
-//       tween: tween,
-//       child: child,
-//       builderWithChild: (context, child, animation) => Opacity(
-//         opacity: animation["opacity"],
-//         child: Transform.translate(
-//             offset: Offset(0, animation["translateY"]), child: child),
-//       ),
-//     );
-//   }
-// }
-
-/*
-* Expanded(
-                      child: Container(
-                        decoration: const BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(10),
-                                topLeft: Radius.circular(10))),
-                        child: Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: isSignIn
-                              ? ListView(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: const [
-                                            Text(
-                                              "Welcome back",
-                                              style: TextStyle(
-                                                  fontSize: 25,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ],
-                                        ),
-                                        /*CircleAvatar(radius: 32,
-                                    backgroundColor: Color.fromRGBO(86, 97, 246, 1),
-                                    child: Icon(
-                                      Icons.camera_alt,
-                                      color: Colors.white,
-                                      size: 45,
-                                    ),
-                                  )*/
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.02,
-                                    ),
-
-                                        TextFormField(
-                                          onChanged: (val) {
-                                            email = val;
-                                          },
-                                          validator: (value) {
-                                            if (value!.isEmpty) {
-                                              return "Feild is Required";
-                                            } else if (!RegExp(
-                                                    r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                                .hasMatch(email)) {
-                                              return "Email not Valid";
-                                            }
-                                            return null;
-                                          },
-                                          decoration: InputDecoration(
-/*border: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10)),*/
-                                              prefixIcon: const Icon(
-                                                Icons.email,
-                                                color: Colors.black,
-                                                size: 30,
-                                              ),
-                                              labelText: "Email",
-                                              labelStyle: const TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.black),
-                                              hintText: "name@example.com",
-                                              hintStyle: const TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold),
-                                              fillColor: Colors.white,
-                                              filled: true),
-                                          style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold),
-                                          textAlign: TextAlign.center,
-                                          keyboardType:
-                                              TextInputType.emailAddress,
-                                        ),
-                                    SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.025,
-                                    ),
-
-                                        TextFormField(
-                                          onChanged: (val) {
-                                            pass = val;
-                                          },
-                                          validator: (value) {
-                                            if (value!.isEmpty) {
-                                              return "Feild is Required";
-                                            }
-                                            return null;
-                                          },
-                                          decoration: InputDecoration(
-                                              /*border: OutlineInputBorder(
-                                        borderRadius:
-                                        BorderRadius.circular(20))*/
-                                              prefixIcon: const Icon(
-                                                Icons.lock,
-                                                color: Colors.black,
-                                                size: 30,
-                                              ),
-                                              suffixIcon: IconButton(
-                                                onPressed: () {
-                                                  setState(() {
-                                                    securePass = !securePass;
-                                                  });
-                                                },
-                                                icon: Icon(
-                                                  securePass
-                                                      ? Icons.remove_red_eye
-                                                      : Icons.security,
-                                                  color: Colors.black,
-                                                  size: 30,
-                                                ),
-                                              ),
-                                              labelText: "Password",
-                                              labelStyle: const TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.black),
-                                              hintText: "Enter your Password",
-                                              hintStyle: const TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold),
-                                              fillColor: Colors.white,
-                                              filled: true),
-                                          style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold),
-                                          textAlign: TextAlign.center,
-                                          keyboardType:
-                                              TextInputType.visiblePassword,
-                                          obscureText: securePass,
-                                        ),
-                                    SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.01,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-
-                                            TextButton(
-                                                onPressed: () {},
-                                                child: const Text(
-                                                  "Forget passwrod?",
-                                                  style: TextStyle(
-                                                      fontSize: 21,
-                                                      color: Colors.blue,
-                                                      fontWeight:
-                                                          FontWeight.w400),
-                                                ))
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      //between button and sign in button
-                                      height: 50.0,
-                                    ),
-
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            if (_key.currentState!.validate()) {
-                                              // Navigator.push(
-                                              //     context,
-                                              //     MaterialPageRoute(
-                                              //       builder: (context) =>
-                                              //           home_screen(),
-                                              //     ));
-                                            }
-                                          },
-                                          child: const Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 13),
-                                            child: Text(
-                                              "SIGN IN",
-                                              style: TextStyle(
-                                                fontSize: 26,
-                                              ),
-                                            ),
-                                          ),
-                                          style: ElevatedButton.styleFrom(
-                                              elevation: 15,
-                                              primary: Color.fromRGBO(
-                                                  249, 168, 38, 1),
-                                              // onPrimary: Colors.black,
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          11))),
-                                        ),
-                                    SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.03,
-                                    ),
-                                    SizedBox(
-                                      height: 5.0,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        const Text(
-                                          "Or sign up with",
-                                          style: TextStyle(fontSize: 20),
-                                        ),
-                                        /*FadeAnimation(
-                                  3.5,
-                                  TextButton(
-                                      onPressed: () {},
-                                      child: const Text(
-                                        "Log in",
-                                        style: TextStyle(
-                                            fontSize: 21,
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.w900),
-                                      )))*/
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 30.0,
-                                    ),
-                                    // Row(
-                                    //   mainAxisAlignment:
-                                    //       MainAxisAlignment.center,
-                                    //   //Center Row contents horizontally,
-                                    //   children: [
-                                    //     MaterialButton(
-                                    //       onPressed: () {},
-                                    //       child: Icon(Icons.facebook),
-                                    //       shape: CircleBorder(),
-                                    //       height: 50,
-                                    //       minWidth: 50,
-                                    //       color:
-                                    //           Color.fromRGBO(249, 168, 38, 1),
-                                    //       textColor: Colors.white,
-                                    //     ),
-                                    //     SizedBox(
-                                    //       width: 15,
-                                    //     ),
-                                    //     MaterialButton(
-                                    //       onPressed: () {},
-                                    //       child: Icon(MyFlutterApp.google),
-                                    //       shape: CircleBorder(),
-                                    //       height: 50,
-                                    //       minWidth: 50,
-                                    //       color:
-                                    //           Color.fromRGBO(249, 168, 38, 1),
-                                    //       textColor: Colors.white,
-                                    //     )
-                                    //   ],
-                                    // )
-                                  ],
-                                )
-                              : ListView(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: const [
-                                            Text(
-                                              "New",
-                                              style: TextStyle(
-                                                  fontSize: 25,
-                                                  fontWeight: FontWeight.w900),
-                                            ),
-                                            Text(
-                                              "Account",
-                                              style: TextStyle(
-                                                  fontSize: 25,
-                                                  fontWeight: FontWeight.w900),
-                                            ),
-                                          ],
-                                        ),
-                                        Column(
-                                          children: const [
-                                            Icon(
-                                              Icons.camera_alt,
-                                              color: Color.fromRGBO(
-                                                  249, 168, 38, 1),
-                                              size: 45,
-                                            ),
-                                            Text(
-                                              "Upload your",
-                                              style: TextStyle(fontSize: 15),
-                                            ),
-                                            Text(
-                                              "profile pucture",
-                                              style: TextStyle(fontSize: 15),
-                                            ),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.01,
-                                    ),
-
-                                        TextFormField(
-                                          onChanged: (val) {
-                                            name = val;
-                                          },
-                                          validator: (value) {
-                                            if (value!.isEmpty) {
-                                              return "Feild is Required";
-                                            }
-                                            return null;
-                                          },
-                                          decoration: InputDecoration(
-                                              /*border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10)),*/
-                                              prefixIcon: const Icon(
-                                                Icons.person,
-                                                color: Colors.black,
-                                                size: 30,
-                                              ),
-                                              labelText: "Name",
-                                              labelStyle: const TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.black),
-                                              hintText: "Enter your Name",
-                                              hintStyle: const TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold),
-                                              fillColor: Colors.white,
-                                              filled: true),
-                                          style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold),
-                                          textAlign: TextAlign.center,
-                                          keyboardType: TextInputType.name,
-                                        ),
-                                    SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.025,
-                                    ),
-
-                                        TextFormField(
-                                          onChanged: (val) {
-                                            email = val;
-                                          },
-                                          validator: (value) {
-                                            if (value!.isEmpty) {
-                                              return "Feild is Required";
-                                            } else if (!RegExp(
-                                                    r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                                .hasMatch(email)) {
-                                              return "Email not Valid";
-                                            }
-                                            return null;
-                                          },
-                                          decoration: InputDecoration(
-/*border: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10)),*/
-                                              prefixIcon: const Icon(
-                                                Icons.email,
-                                                color: Colors.black,
-                                                size: 30,
-                                              ),
-                                              labelText: "Email",
-                                              labelStyle: const TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.black),
-                                              hintText: "name@example.com",
-                                              hintStyle: const TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold),
-                                              fillColor: Colors.white,
-                                              filled: true),
-                                          style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold),
-                                          textAlign: TextAlign.center,
-                                          keyboardType:
-                                              TextInputType.emailAddress,
-                                        ),
-                                    SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.025,
-                                    ),
-
-                                        TextFormField(
-                                          onChanged: (val) {
-                                            pass = val;
-                                          },
-                                          validator: (value) {
-                                            if (value!.isEmpty) {
-                                              return "Feild is Required";
-                                            }
-                                            return null;
-                                          },
-                                          decoration: InputDecoration(
-                                              /*border: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(20)),*/
-                                              prefixIcon: const Icon(
-                                                Icons.lock,
-                                                color: Colors.black,
-                                                size: 30,
-                                              ),
-                                              suffixIcon: IconButton(
-                                                onPressed: () {
-                                                  setState(() {
-                                                    securePass = !securePass;
-                                                  });
-                                                },
-                                                icon: Icon(
-                                                  securePass
-                                                      ? Icons.remove_red_eye
-                                                      : Icons.security,
-                                                  color: Colors.black,
-                                                  size: 30,
-                                                ),
-                                              ),
-                                              labelText: "Password",
-                                              labelStyle: const TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.black),
-                                              hintText: "Enter your Password",
-                                              hintStyle: const TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold),
-                                              fillColor: Colors.white,
-                                              filled: true),
-                                          style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold),
-                                          textAlign: TextAlign.center,
-                                          keyboardType:
-                                              TextInputType.visiblePassword,
-                                          obscureText: securePass,
-                                        ),
-                                    SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.07,
-                                    ),
-
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            if (_key.currentState!.validate()) {}
-                                          },
-                                          child: const Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 13),
-                                            child: Text(
-                                              "SIGN UP",
-                                              style: TextStyle(
-                                                fontSize: 26,
-                                              ),
-                                            ),
-                                          ),
-                                          style: ElevatedButton.styleFrom(
-                                              elevation: 15,
-                                              primary: Color.fromRGBO(
-                                                  249, 168, 38, 1),
-                                              // onPrimary: Colors.black,
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          11))),
-                                        ),
-                                    SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.03,
-                                    ),
-
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          const Text(
-                                            "Or sign up with",
-                                            style: TextStyle(fontSize: 20),
-                                          ),
-                                          /*FadeAnimation(
-                                    3.5
-                                    TextButton(
-                                        onPressed: () {},
-                                        child: const Text(
-                                          "Sign in",
-                                          style: TextStyle(
-                                              fontSize: 21,
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.w900),
-                                        )))*/
-                                        ],
-                                      ),
-
-                                    SizedBox(
-                                      height: 30.0,
-                                    ),
-                                    // FadeAnimation(
-                                    //   6,
-                                    //   Row(
-                                    //     mainAxisAlignment:
-                                    //         MainAxisAlignment.center,
-                                    //     //Center Row contents horizontally,
-                                    //     children: [
-                                    //       MaterialButton(
-                                    //         onPressed: () {},
-                                    //         child: Icon(Icons.facebook),
-                                    //         shape: CircleBorder(),
-                                    //         height: 50,
-                                    //         minWidth: 50,
-                                    //         color:
-                                    //             Color.fromRGBO(249, 168, 38, 1),
-                                    //         textColor: Colors.white,
-                                    //       ),
-                                    //       SizedBox(
-                                    //         width: 15,
-                                    //       ),
-                                    //       MaterialButton(
-                                    //         onPressed: () {},
-                                    //         child: Icon(MyFlutterApp.google),
-                                    //         shape: CircleBorder(),
-                                    //         height: 50,
-                                    //         minWidth: 50,
-                                    //         color:
-                                    //             Color.fromRGBO(249, 168, 38, 1),
-                                    //         textColor: Colors.white,
-                                    //       )
-                                    //     ],
-                                    //   ),
-                                    // ),
-                                  ],
-                                ),
-                        ),
-                      ),
-                    ),
-* */

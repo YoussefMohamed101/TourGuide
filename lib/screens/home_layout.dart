@@ -9,6 +9,8 @@ class Cupertinolayout extends StatefulWidget {
   State<Cupertinolayout> createState() => _CupertinolayoutState();
 }
 
+GlobalKey globalKey = new GlobalKey(debugLabel: 'btm_app_bar');
+
 class _CupertinolayoutState extends State<Cupertinolayout> {
   String _currentPage = "Page1";
 
@@ -42,8 +44,7 @@ class _CupertinolayoutState extends State<Cupertinolayout> {
             !await _navigatorKeys[_currentPage]!.currentState!.maybePop();
         if (isFirstRouteInCurrentTab) {
           if (_currentPage != "Page1") {
-            _selectTab("Page1", 1);
-
+            _selectTab("Page1", 0);
             return false;
           }
         }
@@ -58,6 +59,8 @@ class _CupertinolayoutState extends State<Cupertinolayout> {
           _buildOffstageNavigator("Page4"),
         ]),
         bottomNavigationBar: BottomNavigationBar(
+          key: globalKey,
+
           onTap: (int index) {
             _selectTab(pageKeys[index], index);
           },
